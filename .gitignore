@@ -1,0 +1,62 @@
+# User-specific files (Visual Studio)
+.vs/
+
+.vscode/
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic Libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static Libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.ipa
+
+# IDE/project files
+*.xcodeproj
+*.xcworkspace
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+
+# Precompiled Assets
+SourceArt/**/*.png
+SourceArt/**/*.tga
+
+# Unreal Engine project directories (for multi-project setups)
+**/Binaries/*
+**/Build/*
+!**/Build/**/PakBlacklist*.txt
+!**/Build/**/*.ico
+**/DerivedDataCache/*
+**/Intermediate/*
+**/Saved/*
+**/Plugins/**/Binaries/*
+**/Plugins/**/Intermediate/*
+
+# Built data for maps
+*_BuiltData.uasset
