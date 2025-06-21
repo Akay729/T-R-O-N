@@ -60,8 +60,8 @@ void ABaseCharacter::MoveAction(const FInputActionValue& value)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Moving"));
 	FVector2D MoveVector = value.Get<FVector2D>();
-	AddMovementInput(GetActorForwardVector(), MoveVector.Y);
-	AddMovementInput(GetActorRightVector(), MoveVector.X);
+	AddMovementInput(GetActorForwardVector(), MoveVector.Y*0.6f);
+	AddMovementInput(GetActorRightVector(), MoveVector.X*0.6f);
 }
 void ABaseCharacter::LookAction(const FInputActionValue& value)
 {
