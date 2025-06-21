@@ -6,7 +6,9 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
-
+class UInputMappingContext;
+class UInputAction;
+struct FInputActionValue;
 
 UCLASS()
 class ABaseCharacter : public ACharacter
@@ -27,7 +29,28 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	//Input Action Function
+	UFUNCTION()
+	void ThrowDisk();
+	UFUNCTION()
+	void JumpAction();
+	UFUNCTION()
+	void MoveAction(const FInputActionValue& value);
+	UFUNCTION()
+	void LookAction(const FInputActionValue& value);
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputMappingContext* DefaultMappingContext;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Move;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Look;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Jump;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_ThrowDisk;
 private:
 	UPROPERTY(EditAnywhere, Category = "Disk SpawnPoint")
 	USceneComponent* DiskSpawnPoint;
@@ -35,6 +58,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<class ADisk> DiskClass;
 
-	UFUNCTION(BlueprintCallable)
-	void ThrowDisk();
+	
+
 };
