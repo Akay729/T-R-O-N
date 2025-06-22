@@ -3,6 +3,8 @@
 
 #include "Disk.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "DrawDebugHelpers.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ADisk::ADisk()
@@ -32,6 +34,13 @@ void ADisk::BeginPlay()
 void ADisk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	FVector Start = GetActorLocation();
+	FVector * WorldDir = GetVelocity();
+	//FVector Direction = UKismetMathLibrary::InverseTransformDirection(GetActorTransform(), WorldDir);
+	FVector Direction = GetActorRotation().Vector();
+	FVector End = Start + Direction * 500.0f;
 	
+	DrawDebugDirectionalArrow(GetWorld(), Start, End, 25.f, FColor::Green, false, 0.1f);
 }
 

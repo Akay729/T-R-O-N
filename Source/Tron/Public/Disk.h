@@ -34,4 +34,5 @@ private:
 	float DiskInitialSpeed = 600;
 	UPROPERTY(EditDefaultsOnly)
 	float DiskMaxSpeed = 1000;
+
 };

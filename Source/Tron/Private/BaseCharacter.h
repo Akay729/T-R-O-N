@@ -58,4 +58,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<class ADisk> DiskClass;	
 
+	float SpawnCooldown = 0.25f;
+	bool bCanSpawn = true;
+	void CanSpawn();
 };

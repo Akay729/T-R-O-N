@@ -79,9 +79,26 @@ void ABaseCharacter::JumpAction()
 
 void ABaseCharacter::ThrowDisk()
 {
+	if (!bCanSpawn) return;
+	bCanSpawn = false;
+
 	FVector DiskSpawnLocation = DiskSpawnPoint->GetComponentLocation();
 	FRotator DiskSpawnRotation = RootComponent->GetComponentRotation();
 	UE_LOG(LogTemp, Warning, TEXT("Throwing"));
 
 	auto Disk = GetWorld()->SpawnActor<ADisk>(DiskClass, DiskSpawnLocation, DiskSpawnRotation);
+	
+	FTimerHandle SpawnTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(
+        SpawnTimerHandle,
+        this,
+        &ABaseCharacter::CanSpawn,
+        SpawnCooldown,
+        false
+    );
+}
+
+void ABaseCharacter::CanSpawn()
+{
+	bCanSpawn = true;
 }
