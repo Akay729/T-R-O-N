@@ -56,8 +56,6 @@ private:
 	USceneComponent* DiskSpawnPoint;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TSubclassOf<class ADisk> DiskClass;
-
-	
+	TSubclassOf<class ADisk> DiskClass;	
 
 };

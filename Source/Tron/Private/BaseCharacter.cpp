@@ -8,6 +8,7 @@
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Disk.h"
 // Sets default values
 ABaseCharacter::ABaseCharacter()
 {
@@ -16,7 +17,6 @@ ABaseCharacter::ABaseCharacter()
 
 	DiskSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Disk Throw SpawnPoint"));
 	DiskSpawnPoint->SetupAttachment(RootComponent);
-
 }
 
 // Called when the game starts or when spawned
@@ -79,5 +79,9 @@ void ABaseCharacter::JumpAction()
 
 void ABaseCharacter::ThrowDisk()
 {
+	FVector DiskSpawnLocation = DiskSpawnPoint->GetComponentLocation();
+	FRotator DiskSpawnRotation = RootComponent->GetComponentRotation();
 	UE_LOG(LogTemp, Warning, TEXT("Throwing"));
+
+	auto Disk = GetWorld()->SpawnActor<ADisk>(DiskClass, DiskSpawnLocation, DiskSpawnRotation);
 }

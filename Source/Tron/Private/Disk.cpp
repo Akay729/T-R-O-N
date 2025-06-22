@@ -14,8 +14,8 @@ ADisk::ADisk()
 	RootComponent = DiskMeshComponent;
 
 	DiskMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
-	DiskMovementComponent->MaxSpeed = 10000.0f;
-	DiskMovementComponent->InitialSpeed = 10000.0f;
+	DiskMovementComponent->MaxSpeed = DiskMaxSpeed;
+	DiskMovementComponent->InitialSpeed = DiskInitialSpeed;
 	DiskMovementComponent->bShouldBounce = true;
 	DiskMovementComponent->Bounciness = 1.f;
 	DiskMovementComponent->ProjectileGravityScale = 0.0f;
@@ -32,6 +32,6 @@ void ADisk::BeginPlay()
 void ADisk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
