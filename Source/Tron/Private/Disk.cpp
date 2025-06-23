@@ -67,7 +67,8 @@ void ADisk::GoBackToOwner()
 	
 	FVector OwnerLocation =  DiskOwner->GetActorLocation();
 	FVector DiskLocation = GetActorLocation();
-
+	
+	if(DiskMovementComponent == nullptr) return;
 	DiskMovementComponent->bShouldBounce = false;
 	DiskMovementComponent->Velocity = FVector::ZeroVector;
 	// Normalizza la direzione e scala per mantenere la stessa velocità
