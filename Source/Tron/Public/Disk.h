@@ -19,6 +19,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable)
+	int32 GetDiskBounce();
+
+	UFUNCTION()
+	void OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -34,5 +40,10 @@ private:
 	float DiskInitialSpeed = 600;
 	UPROPERTY(EditDefaultsOnly)
 	float DiskMaxSpeed = 1000;
+	UPROPERTY(EditDefaultsOnly)
+	int32 MaxBounces = 5;
+	UPROPERTY(VisibleAnywhere)
+	int32 BounceCount = 0;
 
+	void GoBackToOwner();
 };

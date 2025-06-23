@@ -21,6 +21,7 @@ ADisk::ADisk()
 	DiskMovementComponent->bShouldBounce = true;
 	DiskMovementComponent->Bounciness = 1.f;
 	DiskMovementComponent->ProjectileGravityScale = 0.0f;
+	DiskMovementComponent->OnProjectileBounce.AddDynamic(this, &ADisk::OnProjectileBounce);
 }
 
 // Called when the game starts or when spawned
@@ -36,7 +37,7 @@ void ADisk::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	FVector Start = GetActorLocation();
-	FVector * WorldDir = GetVelocity();
+	FVector WorldDir = GetVelocity();
 	//FVector Direction = UKismetMathLibrary::InverseTransformDirection(GetActorTransform(), WorldDir);
 	FVector Direction = GetActorRotation().Vector();
 	FVector End = Start + Direction * 500.0f;
@@ -44,3 +45,33 @@ void ADisk::Tick(float DeltaTime)
 	DrawDebugDirectionalArrow(GetWorld(), Start, End, 25.f, FColor::Green, false, 0.1f);
 }
 
+int32 ADisk::GetDiskBounce()
+{
+	return BounceCount;
+}
+
+void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
+{
+    BounceCount++;
+    UE_LOG(LogTemp, Warning, TEXT("Rimbalzo #%d"), BounceCount);
+	if (BounceCount >= MaxBounces)
+	{	
+		GoBackToOwner();
+	}
+}
+
+void ADisk::GoBackToOwner()
+{
+	AActor* DiskOwner = GetOwner();
+	if (DiskOwner == nullptr) return;
+	
+	FVector OwnerLocation =  DiskOwner->GetActorLocation();
+	FVector DiskLocation = GetActorLocation();
+
+	DiskMovementComponent->bShouldBounce = false;
+	DiskMovementComponent->Velocity = FVector::ZeroVector;
+	// Normalizza la direzione e scala per mantenere la stessa velocità
+	FVector DirectionToOwner = (OwnerLocation - DiskLocation).GetSafeNormal();
+	DiskMovementComponent->Velocity = DirectionToOwner * DiskMovementComponent->InitialSpeed;
+
+}

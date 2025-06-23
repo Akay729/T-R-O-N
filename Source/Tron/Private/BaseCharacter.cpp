@@ -87,6 +87,7 @@ void ABaseCharacter::ThrowDisk()
 	UE_LOG(LogTemp, Warning, TEXT("Throwing"));
 
 	auto Disk = GetWorld()->SpawnActor<ADisk>(DiskClass, DiskSpawnLocation, DiskSpawnRotation);
+	Disk->SetOwner(this);
 	
 	FTimerHandle SpawnTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(
