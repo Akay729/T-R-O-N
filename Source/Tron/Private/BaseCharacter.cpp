@@ -24,6 +24,15 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if(DiskClass == nullptr) return;
+	CharacterDisk = GetWorld()->SpawnActor<ADisk>(DiskClass);
+	CharacterDisk->SetActorEnableCollision(false);
+	
+	if(CharacterDisk == nullptr) return;
+	CharacterDisk->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("MCH-upper_arm_ik_target_RSocket"));
+	CharacterDisk->SetOwner(this);
+
+	UE_LOG(LogTemp, Warning, TEXT("CharacterDisk: %s"), *CharacterDisk->GetName());
 }
 
 // Called every frame
@@ -49,8 +58,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		{
 			Input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABaseCharacter::MoveAction);
 			Input->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ABaseCharacter::LookAction);
-			Input->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ABaseCharacter::Jump);
-			Input->BindAction(IA_ThrowDisk, ETriggerEvent::Triggered, this, &ABaseCharacter::ThrowDisk);
+			Input->BindAction(IA_Jump, ETriggerEvent::Started, this, &ABaseCharacter::Jump);
+			Input->BindAction(IA_ThrowDisk, ETriggerEvent::Started, this, &ABaseCharacter::ThrowDisk);
 		}
 	}
 
@@ -79,27 +88,7 @@ void ABaseCharacter::JumpAction()
 
 void ABaseCharacter::ThrowDisk()
 {
-	if (!bCanSpawn) return;
-	bCanSpawn = false;
-
 	FVector DiskSpawnLocation = DiskSpawnPoint->GetComponentLocation();
 	FRotator DiskSpawnRotation = RootComponent->GetComponentRotation();
 	UE_LOG(LogTemp, Warning, TEXT("Throwing"));
-
-	auto Disk = GetWorld()->SpawnActor<ADisk>(DiskClass, DiskSpawnLocation, DiskSpawnRotation);
-	Disk->SetOwner(this);
-	
-	FTimerHandle SpawnTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(
-        SpawnTimerHandle,
-        this,
-        &ABaseCharacter::CanSpawn,
-        SpawnCooldown,
-        false
-    );
-}
-
-void ABaseCharacter::CanSpawn()
-{
-	bCanSpawn = true;
 }

@@ -6,6 +6,16 @@
 #include "GameFramework/Actor.h"
 #include "Disk.generated.h"
 
+UENUM(BlueprintType)
+enum class EDiskState : uint8 {
+	None	UMETA(DisplayName = "None"),
+	Attached	UMETA(DisplayName = "Attached"),
+	Thrown	UMETA(DisplayName = "Thrown"),
+	Returning	UMETA(DisplayName = "Returning"),
+	Deflected	UMETA(DisplayName = "Deflected"),
+};
+
+
 UCLASS()
 class TRON_API ADisk : public AActor
 {
@@ -25,6 +35,9 @@ protected:
 	UFUNCTION()
 	void OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 
+	UFUNCTION()
+	void ThorwDisk();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -38,12 +51,16 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float DiskInitialSpeed = 600;
+	
 	UPROPERTY(EditDefaultsOnly)
 	float DiskMaxSpeed = 1000;
+	
 	UPROPERTY(EditDefaultsOnly)
-	int32 MaxBounces = 5;
+	int32 MaxBounces = 3;
+	
 	UPROPERTY(VisibleAnywhere)
 	int32 BounceCount = 0;
 
+	EDiskState CurrentState = EDiskState::None;
 	void GoBackToOwner();
 };

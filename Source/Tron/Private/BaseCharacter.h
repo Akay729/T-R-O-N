@@ -8,6 +8,7 @@
 
 class UInputMappingContext;
 class UInputAction;
+class ADisk;
 struct FInputActionValue;
 
 UCLASS()
@@ -51,6 +52,7 @@ public:
 	UInputAction* IA_Jump;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_ThrowDisk;
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Disk SpawnPoint")
 	USceneComponent* DiskSpawnPoint;
@@ -58,7 +60,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<class ADisk> DiskClass;	
 
-	float SpawnCooldown = 0.25f;
-	bool bCanSpawn = true;
-	void CanSpawn();
+	ADisk* CharacterDisk;
+
 };

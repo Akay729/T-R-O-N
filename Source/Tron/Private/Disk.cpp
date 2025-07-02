@@ -16,10 +16,9 @@ ADisk::ADisk()
 	RootComponent = DiskMeshComponent;
 
 	DiskMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
-	DiskMovementComponent->MaxSpeed = DiskMaxSpeed;
-	DiskMovementComponent->InitialSpeed = DiskInitialSpeed;
-	DiskMovementComponent->bShouldBounce = true;
-	DiskMovementComponent->Bounciness = 1.f;
+	DiskMovementComponent->MaxSpeed = 0;
+	DiskMovementComponent->InitialSpeed = 0;
+	DiskMovementComponent->Velocity = FVector::ZeroVector;
 	DiskMovementComponent->ProjectileGravityScale = 0.0f;
 	DiskMovementComponent->OnProjectileBounce.AddDynamic(this, &ADisk::OnProjectileBounce);
 }
@@ -36,13 +35,13 @@ void ADisk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FVector Start = GetActorLocation();
+	/* FVector Start = GetActorLocation();
 	FVector WorldDir = GetVelocity();
 	//FVector Direction = UKismetMathLibrary::InverseTransformDirection(GetActorTransform(), WorldDir);
 	FVector Direction = GetActorRotation().Vector();
 	FVector End = Start + Direction * 500.0f;
 	
-	DrawDebugDirectionalArrow(GetWorld(), Start, End, 25.f, FColor::Green, false, 0.1f);
+	DrawDebugDirectionalArrow(GetWorld(), Start, End, 25.f, FColor::Green, false, 0.1f); */
 }
 
 int32 ADisk::GetDiskBounce()
@@ -53,11 +52,18 @@ int32 ADisk::GetDiskBounce()
 void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {
     BounceCount++;
-    UE_LOG(LogTemp, Warning, TEXT("Rimbalzo #%d"), BounceCount);
+    //UE_LOG(LogTemp, Warning, TEXT("Rimbalzo #%d"), BounceCount);
 	if (BounceCount >= MaxBounces)
 	{	
 		GoBackToOwner();
 	}
+}
+
+void ADisk::ThorwDisk()
+{
+	DiskMovementComponent->InitialSpeed = 0;
+	DiskMovementComponent->bShouldBounce = true;
+	DiskMovementComponent->Bounciness = 1.f;
 }
 
 void ADisk::GoBackToOwner()
@@ -71,6 +77,7 @@ void ADisk::GoBackToOwner()
 	if(DiskMovementComponent == nullptr) return;
 	DiskMovementComponent->bShouldBounce = false;
 	DiskMovementComponent->Velocity = FVector::ZeroVector;
+	
 	// Normalizza la direzione e scala per mantenere la stessa velocità
 	FVector DirectionToOwner = (OwnerLocation - DiskLocation).GetSafeNormal();
 	DiskMovementComponent->Velocity = DirectionToOwner * DiskMovementComponent->InitialSpeed;
