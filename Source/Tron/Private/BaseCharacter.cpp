@@ -58,7 +58,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		{
 			Input->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABaseCharacter::MoveAction);
 			Input->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ABaseCharacter::LookAction);
-			Input->BindAction(IA_Jump, ETriggerEvent::Started, this, &ABaseCharacter::Jump);
+			Input->BindAction(IA_Jump, ETriggerEvent::Started, this, &ABaseCharacter::JumpAction);
 			Input->BindAction(IA_ThrowDisk, ETriggerEvent::Started, this, &ABaseCharacter::ThrowDisk);
 		}
 	}
@@ -67,14 +67,12 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ABaseCharacter::MoveAction(const FInputActionValue& value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Moving"));
 	FVector2D MoveVector = value.Get<FVector2D>();
 	AddMovementInput(GetActorForwardVector(), MoveVector.Y*0.6f);
 	AddMovementInput(GetActorRightVector(), MoveVector.X*0.6f);
 }
 void ABaseCharacter::LookAction(const FInputActionValue& value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Looking"));
 	FVector2D LookVector = value.Get<FVector2D>();
 	AddControllerYawInput(LookVector.X);
 	AddControllerPitchInput(LookVector.Y*-1);
@@ -82,13 +80,14 @@ void ABaseCharacter::LookAction(const FInputActionValue& value)
 }
 void ABaseCharacter::JumpAction()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Jumping"));
-	Jump();
+	CharacterDisk->ReattachDiskToSocket();
 }
 
 void ABaseCharacter::ThrowDisk()
 {
-	FVector DiskSpawnLocation = DiskSpawnPoint->GetComponentLocation();
-	FRotator DiskSpawnRotation = RootComponent->GetComponentRotation();
-	UE_LOG(LogTemp, Warning, TEXT("Throwing"));
+	CharacterDisk->Throw();
+	CharacterDisk->SetActorEnableCollision(true);
+
+	/* FVector DiskSpawnLocation = DiskSpawnPoint->GetComponentLocation();
+	FRotator DiskSpawnRotation = RootComponent->GetComponentRotation(); */
 }

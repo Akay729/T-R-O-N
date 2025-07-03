@@ -40,7 +40,8 @@
 			"functional": "cpp",
 			"xlocmon": "cpp",
 			"xtr1common": "cpp",
-			"xutility": "cpp"
+			"xutility": "cpp",
+			"*.rh": "cpp"
 		}
 	},
 	"extensions": {

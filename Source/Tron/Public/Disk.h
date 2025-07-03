@@ -10,9 +10,9 @@ UENUM(BlueprintType)
 enum class EDiskState : uint8 {
 	None	UMETA(DisplayName = "None"),
 	Attached	UMETA(DisplayName = "Attached"),
-	Thrown	UMETA(DisplayName = "Thrown"),
+	Throw	UMETA(DisplayName = "Thrown"),
 	Returning	UMETA(DisplayName = "Returning"),
-	Deflected	UMETA(DisplayName = "Deflected"),
+	Deflected	UMETA(DisplayName = "Deflected")
 };
 
 
@@ -35,12 +35,14 @@ protected:
 	UFUNCTION()
 	void OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 
-	UFUNCTION()
-	void ThorwDisk();
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	UFUNCTION()
+	void Throw();
+	void ReattachDiskToSocket();
+	EDiskState CurrentState = EDiskState::None;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category="Costum")
@@ -50,17 +52,23 @@ private:
 	class UProjectileMovementComponent* DiskMovementComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	float DiskInitialSpeed = 600;
+	float DiskSpeed = 1400;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float DiskMaxSpeed = 1000;
+	float DiskMaxSpeed = 2000;
 	
 	UPROPERTY(EditDefaultsOnly)
 	int32 MaxBounces = 3;
 	
 	UPROPERTY(VisibleAnywhere)
 	int32 BounceCount = 0;
-
-	EDiskState CurrentState = EDiskState::None;
+	
+	UFUNCTION()
 	void GoBackToOwner();
+
+	/* UFUNCTION()
+	void DiskTrace(FHitResult &HitResult, FVector& ShotDirection); */
+	
+	UFUNCTION()
+	AController* GetOwnerController();
 };
