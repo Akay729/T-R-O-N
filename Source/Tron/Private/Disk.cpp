@@ -127,10 +127,10 @@ void ADisk::ReattachDiskToSocket()
 	ABaseCharacter* DiskOwner = Cast<ABaseCharacter>(GetOwner());
 	if (DiskOwner == nullptr) return;
 
-	FVector SocketLocation = DiskOwner->GetMesh()->GetSocketLocation(TEXT("MCH-upper_arm_ik_target_RSocket"));
+	FVector SocketLocation = DiskOwner->GetMesh()->GetSocketLocation(TEXT("RigthHandSocket"));
 	if (FVector::Dist(GetActorLocation(), SocketLocation) < 100.f)
 	{
-		AttachToComponent(DiskOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("MCH-upper_arm_ik_target_RSocket"));
+		AttachToComponent(DiskOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("RigthHandSocket"));
 
 		SetActorEnableCollision(false);
 		DiskMovementComponent->Velocity = FVector::ZeroVector;

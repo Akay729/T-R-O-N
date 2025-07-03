@@ -29,7 +29,10 @@ void ABaseCharacter::BeginPlay()
 	CharacterDisk->SetActorEnableCollision(false);
 	
 	if(CharacterDisk == nullptr) return;
-	CharacterDisk->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("MCH-upper_arm_ik_target_RSocket"));
+	CharacterDisk->AttachToComponent(
+		GetMesh(), 
+		FAttachmentTransformRules::SnapToTargetNotIncludingScale, 
+		TEXT("RigthHandSocket"));
 	CharacterDisk->SetOwner(this);
 
 	UE_LOG(LogTemp, Warning, TEXT("CharacterDisk: %s"), *CharacterDisk->GetName());
