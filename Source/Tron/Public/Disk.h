@@ -39,17 +39,22 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
-	UFUNCTION()
 	void Throw();
 	void ReattachDiskToSocket();
+
+	UPROPERTY()
 	EDiskState CurrentState = EDiskState::None;
+
+	UFUNCTION(BlueprintCallable)
+	EDiskState GetCurrentState() {return CurrentState;}
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Movement")
+	class UProjectileMovementComponent* DiskMovementComponent;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category="Costum")
 	UStaticMeshComponent* DiskMeshComponent;
 
-	UPROPERTY(VisibleAnywhere, Category="Movement")
-	class UProjectileMovementComponent* DiskMovementComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	float DiskSpeed = 1400;
@@ -58,12 +63,14 @@ private:
 	float DiskMaxSpeed = 2000;
 	
 	UPROPERTY(EditDefaultsOnly)
+	float RangeToCatch = 150;
+	
+	UPROPERTY(EditDefaultsOnly)
 	int32 MaxBounces = 3;
 	
 	UPROPERTY(VisibleAnywhere)
 	int32 BounceCount = 0;
 	
-	UFUNCTION()
 	void GoBackToOwner();
 
 	/* UFUNCTION()

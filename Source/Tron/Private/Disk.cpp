@@ -63,7 +63,8 @@ int32 ADisk::GetDiskBounce()
 void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {
     BounceCount++;
-    //UE_LOG(LogTemp, Warning, TEXT("Rimbalzo #%d"), BounceCount);
+    
+	//UE_LOG(LogTemp, Warning, TEXT("Rimbalzo #%d"), BounceCount);
 	if (BounceCount >= MaxBounces)
 	{	
 		GoBackToOwner();
@@ -79,8 +80,14 @@ void ADisk::Throw()
 	//if(CurrentState == EDiskState::Throw) return;
 	
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-
+	
+	DiskMovementComponent->StopMovementImmediately();
+	DiskMovementComponent->Deactivate();
+	DiskMovementComponent->SetUpdatedComponent(DiskMeshComponent); // ← importante
+	
 	DiskMovementComponent->SetComponentTickEnabled(true);
+	DiskMeshComponent->IgnoreActorWhenMoving(GetOwner(), true);
+
 	//DiskMovementComponent->StopMovementImmediately();
 	DiskMovementComponent->Activate(true);
 	DiskMovementComponent->Velocity = FVector::ZeroVector; // reset prima di lanciare
@@ -88,7 +95,7 @@ void ADisk::Throw()
 	FVector	ViewpointLocation;
 	FRotator ViewPortRotation;
 	OwnerController->GetPlayerViewPoint(ViewpointLocation,ViewPortRotation);
-
+	
 	
 	DiskMovementComponent->bShouldBounce = true;
 	DiskMovementComponent->Bounciness = 1.f;
@@ -97,29 +104,31 @@ void ADisk::Throw()
 	FVector LaunchDirection = ViewPortRotation.Vector();
 	DiskMovementComponent->Velocity = LaunchDirection * DiskSpeed;
 	SetActorRotation(LaunchDirection.Rotation());
+	SetActorEnableCollision(true);
 	
 	CurrentState = EDiskState::Throw;
-
 	//UE_LOG(LogTemp, Display, TEXT("Owner: %s"), *DiskOwner->GetName());
 }
 
 void ADisk::GoBackToOwner()
 {
-	if (CurrentState == EDiskState::Returning) return;
-	AActor* DiskOwner = GetOwner();
-	if (DiskOwner == nullptr) return;
-	
-	FVector OwnerLocation = DiskOwner->GetActorLocation();
-	FVector DiskLocation = GetActorLocation();
-	
-	if(DiskMovementComponent == nullptr) return;
-	DiskMovementComponent->bShouldBounce = false;
-	//DiskMovementComponent->Velocity = FVector::ZeroVector;
-	
-	// Normalizza la direzione e scala per mantenere la stessa velocità
-	FVector DirectionToOwner = (OwnerLocation - DiskLocation).GetSafeNormal();
-	DiskMovementComponent->Velocity = DirectionToOwner * DiskSpeed;
-	CurrentState = EDiskState::Returning;
+	if (CurrentState == EDiskState::Throw)
+	{
+		AActor* DiskOwner = GetOwner();
+		if (DiskOwner == nullptr) return;
+		
+		FVector OwnerLocation = DiskOwner->GetActorLocation();
+		FVector DiskLocation = GetActorLocation();
+		
+		if(DiskMovementComponent == nullptr) return;
+		DiskMovementComponent->bShouldBounce = false;
+		//DiskMovementComponent->Velocity = FVector::ZeroVector;
+		
+		// Normalizza la direzione e scala per mantenere la stessa velocità
+		FVector DirectionToOwner = (OwnerLocation - DiskLocation).GetSafeNormal();
+		DiskMovementComponent->Velocity = DirectionToOwner * DiskSpeed;
+		CurrentState = EDiskState::Returning;
+	}
 }
 
 void ADisk::ReattachDiskToSocket()
@@ -128,15 +137,19 @@ void ADisk::ReattachDiskToSocket()
 	if (DiskOwner == nullptr) return;
 
 	FVector SocketLocation = DiskOwner->GetMesh()->GetSocketLocation(TEXT("RightHandSocket"));
-	if (FVector::Dist(GetActorLocation(), SocketLocation) < 100.f)
+	if (FVector::Dist(GetActorLocation(), SocketLocation) < RangeToCatch)
 	{
-		AttachToComponent(DiskOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("RightHandSocket"));
+		bool isAttached = AttachToComponent(DiskOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("RightHandSocket"));
 
 		SetActorEnableCollision(false);
 		DiskMovementComponent->Velocity = FVector::ZeroVector;
 		BounceCount = 0;
-
-		CurrentState = EDiskState::Attached;
+		
+		if (isAttached)
+		{
+			CurrentState = EDiskState::Attached;
+		}
+		
 	}
 }
 

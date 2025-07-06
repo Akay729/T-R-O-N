@@ -83,13 +83,13 @@ void ABaseCharacter::LookAction(const FInputActionValue& value)
 }
 void ABaseCharacter::JumpAction()
 {
-	CharacterDisk->ReattachDiskToSocket();
+	//CharacterDisk->ReattachDiskToSocket();
+	Jump();
 }
 
 void ABaseCharacter::ThrowDisk()
 {
 	CharacterDisk->Throw();
-	CharacterDisk->SetActorEnableCollision(true);
 
 	/* FVector DiskSpawnLocation = DiskSpawnPoint->GetComponentLocation();
 	FRotator DiskSpawnRotation = RootComponent->GetComponentRotation(); */
