@@ -32,7 +32,7 @@ void ABaseCharacter::BeginPlay()
 	CharacterDisk->AttachToComponent(
 		GetMesh(), 
 		FAttachmentTransformRules::SnapToTargetNotIncludingScale, 
-		TEXT("RigthHandSocket"));
+		TEXT("RightHandSocket"));
 	CharacterDisk->SetOwner(this);
 
 	UE_LOG(LogTemp, Warning, TEXT("CharacterDisk: %s"), *CharacterDisk->GetName());
