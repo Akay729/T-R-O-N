@@ -33,25 +33,49 @@ public:
 	
 	//Input Action Function
 	UFUNCTION()
-	void ThrowDisk();
-	UFUNCTION()
-	void JumpAction();
-	UFUNCTION()
 	void MoveAction(const FInputActionValue& value);
+	
 	UFUNCTION()
 	void LookAction(const FInputActionValue& value);
-
+	
+	UFUNCTION()
+	void JumpAction();
+	
+	UFUNCTION()
+	void ThrowDisk();
+	
+	UFUNCTION()
+	void Dash();
+	
+	UFUNCTION()
+	void StartSprint();
+	
+	UFUNCTION()
+	void StopSprint();
+	
+	
+	//Mapping Context to set in the BP class
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputMappingContext* DefaultMappingContext;
 
+	//Input Action to set in the BP class
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_Move;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_Look;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_Jump;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_ThrowDisk;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Dash;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Sprint;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Disk SpawnPoint")
@@ -61,5 +85,14 @@ private:
 	TSubclassOf<class ADisk> DiskClass;	
 
 	ADisk* CharacterDisk;
+
+	UPROPERTY(EditDefaultsOnly)
+	float DashDistance = 500;
+
+	UPROPERTY(EditDefaultsOnly, Category="Movement")
+	float WalkSpeed = 350.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Movement")
+	float SprintSpeed = 650.f;
 
 };

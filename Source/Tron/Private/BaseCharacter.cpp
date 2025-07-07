@@ -9,6 +9,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Disk.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 // Sets default values
 ABaseCharacter::ABaseCharacter()
 {
@@ -42,6 +45,9 @@ void ABaseCharacter::BeginPlay()
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	FVector ForwardDir = GetActorForwardVector();
+	FVector start = GetActorLocation();
+	DrawDebugLine(GetWorld(), start, start + ForwardDir * 500, FColor::Green, false, 0.1);
 
 }
 
@@ -63,6 +69,9 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 			Input->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ABaseCharacter::LookAction);
 			Input->BindAction(IA_Jump, ETriggerEvent::Started, this, &ABaseCharacter::JumpAction);
 			Input->BindAction(IA_ThrowDisk, ETriggerEvent::Started, this, &ABaseCharacter::ThrowDisk);
+			Input->BindAction(IA_Dash, ETriggerEvent::Started, this, &ABaseCharacter::Dash);
+			Input->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &ABaseCharacter::StartSprint);
+			Input->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &ABaseCharacter::StopSprint);
 		}
 	}
 
@@ -71,8 +80,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ABaseCharacter::MoveAction(const FInputActionValue& value)
 {
 	FVector2D MoveVector = value.Get<FVector2D>();
-	AddMovementInput(GetActorForwardVector(), MoveVector.Y*0.6f);
-	AddMovementInput(GetActorRightVector(), MoveVector.X*0.6f);
+	AddMovementInput(GetActorForwardVector(), MoveVector.Y);
+	AddMovementInput(GetActorRightVector(), MoveVector.X);
 }
 void ABaseCharacter::LookAction(const FInputActionValue& value)
 {
@@ -93,4 +102,22 @@ void ABaseCharacter::ThrowDisk()
 
 	/* FVector DiskSpawnLocation = DiskSpawnPoint->GetComponentLocation();
 	FRotator DiskSpawnRotation = RootComponent->GetComponentRotation(); */
+}
+
+void ABaseCharacter::Dash()
+{
+	//const FVector ForwardDir = GetActorRotation().Vector();
+	const FVector Direction = GetCharacterMovement()->GetLastInputVector();
+	LaunchCharacter(Direction * DashDistance, true, true);
+
+}
+
+void ABaseCharacter::StartSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+}
+
+void ABaseCharacter::StopSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
