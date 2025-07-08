@@ -21,12 +21,15 @@ ADisk::ADisk()
 	DiskMovementComponent->Velocity = FVector::ZeroVector;
 	DiskMovementComponent->ProjectileGravityScale = 0.0f;
 	DiskMovementComponent->OnProjectileBounce.AddDynamic(this, &ADisk::OnProjectileBounce);
+
 }
 
 // Called when the game starts or when spawned
 void ADisk::BeginPlay()
 {
 	Super::BeginPlay();
+	DiskMovementComponent->StopMovementImmediately();
+	CurrentState = EDiskState::Attached;
 	
 }
 
@@ -34,14 +37,6 @@ void ADisk::BeginPlay()
 void ADisk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	/* FVector Start = GetActorLocation();
-	FVector WorldDir = GetVelocity();
-	//FVector Direction = UKismetMathLibrary::InverseTransformDirection(GetActorTransform(), WorldDir);
-	FVector Direction = GetActorRotation().Vector();
-	FVector End = Start + Direction * 500.0f;
-	
-	DrawDebugDirectionalArrow(GetWorld(), Start, End, 25.f, FColor::Green, false, 0.1f); */
 
 	if(CurrentState == EDiskState::Returning)
 	{
@@ -79,34 +74,34 @@ void ADisk::Throw()
 	if(OwnerController == nullptr) return;
 	//if(CurrentState == EDiskState::Throw) return;
 	
-	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	
-	DiskMovementComponent->StopMovementImmediately();
-	DiskMovementComponent->Deactivate();
-	DiskMovementComponent->SetUpdatedComponent(DiskMeshComponent); // ← importante
-	
-	DiskMovementComponent->SetComponentTickEnabled(true);
-	DiskMeshComponent->IgnoreActorWhenMoving(GetOwner(), true);
+	if (CurrentState == EDiskState::Attached)
+	{
+		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		
+		DiskMovementComponent->StopMovementImmediately();
+		DiskMovementComponent->Deactivate();
+		DiskMovementComponent->SetUpdatedComponent(DiskMeshComponent); // ← importante
+		DiskMovementComponent->SetComponentTickEnabled(true);
+		DiskMeshComponent->IgnoreActorWhenMoving(GetOwner(), true);
 
-	//DiskMovementComponent->StopMovementImmediately();
-	DiskMovementComponent->Activate(true);
-	DiskMovementComponent->Velocity = FVector::ZeroVector; // reset prima di lanciare
-	
-	FVector	ViewpointLocation;
-	FRotator ViewPortRotation;
-	OwnerController->GetPlayerViewPoint(ViewpointLocation,ViewPortRotation);
-	
-	
-	DiskMovementComponent->bShouldBounce = true;
-	DiskMovementComponent->Bounciness = 1.f;
-	DiskMovementComponent->Friction = 0.f;
-	
-	FVector LaunchDirection = ViewPortRotation.Vector();
-	DiskMovementComponent->Velocity = LaunchDirection * DiskSpeed;
-	SetActorRotation(LaunchDirection.Rotation());
-	SetActorEnableCollision(true);
-	
-	CurrentState = EDiskState::Throw;
+		DiskMovementComponent->Activate(true);
+		DiskMovementComponent->Velocity = FVector::ZeroVector; // reset prima di lanciare
+		
+		FVector	ViewpointLocation;
+		FRotator ViewPortRotation;
+		OwnerController->GetPlayerViewPoint(ViewpointLocation,ViewPortRotation);
+		
+		DiskMovementComponent->bShouldBounce = true;
+		DiskMovementComponent->Bounciness = 1.f;
+		DiskMovementComponent->Friction = 0.f;
+		
+		FVector LaunchDirection = ViewPortRotation.Vector();
+		DiskMovementComponent->Velocity = LaunchDirection * DiskSpeed;
+		SetActorRotation(LaunchDirection.Rotation());
+		SetActorEnableCollision(true);
+		
+		CurrentState = EDiskState::Throw;
+	}
 	//UE_LOG(LogTemp, Display, TEXT("Owner: %s"), *DiskOwner->GetName());
 }
 
@@ -140,9 +135,11 @@ void ADisk::ReattachDiskToSocket()
 	if (FVector::Dist(GetActorLocation(), SocketLocation) < RangeToCatch)
 	{
 		bool isAttached = AttachToComponent(DiskOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("RightHandSocket"));
+		SetActorRotation(DiskOwner->GetMesh()->GetSocketRotation(TEXT("RightHandSocket")));
 
 		SetActorEnableCollision(false);
 		DiskMovementComponent->Velocity = FVector::ZeroVector;
+		DiskMovementComponent->StopMovementImmediately();
 		BounceCount = 0;
 		
 		if (isAttached)
