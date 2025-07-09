@@ -146,7 +146,6 @@ void ADisk::ReattachDiskToSocket()
 		{
 			CurrentState = EDiskState::Attached;
 		}
-		
 	}
 }
 

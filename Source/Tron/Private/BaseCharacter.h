@@ -9,6 +9,7 @@
 class UInputMappingContext;
 class UInputAction;
 class ADisk;
+class UHealthComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -77,9 +78,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_Sprint;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UHealthComponent* HealthComponent;
+
 private:
-	UPROPERTY(EditAnywhere, Category = "Disk SpawnPoint")
+	UPROPERTY(EditAnywhere, Category = "Components")
 	USceneComponent* DiskSpawnPoint;
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<class ADisk> DiskClass;	

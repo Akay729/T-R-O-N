@@ -12,13 +12,17 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Components/HealthComponent.h"
 // Sets default values
 ABaseCharacter::ABaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	DiskSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Disk Throw SpawnPoint"));
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Healt Component"));
+
+	//NOT USED YET
+	DiskSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Disk SpawnPoint Component"));
 	DiskSpawnPoint->SetupAttachment(RootComponent);
 }
 
@@ -26,11 +30,21 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (HealthComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HP: %f"), HealthComponent->GetHealthPercent()*100.f);
+	}
 	
+
+	UE_LOG(LogTemp, Display, TEXT("Your message"));
+	
+	//Disk Creation
 	if(DiskClass == nullptr) return;
 	CharacterDisk = GetWorld()->SpawnActor<ADisk>(DiskClass);
 	CharacterDisk->SetActorEnableCollision(false);
 	
+	//Attach Disk to mesh socket
 	if(CharacterDisk == nullptr) return;
 	CharacterDisk->AttachToComponent(
 		GetMesh(), 
@@ -38,7 +52,7 @@ void ABaseCharacter::BeginPlay()
 		TEXT("RightHandSocket"));
 	CharacterDisk->SetOwner(this);
 
-	UE_LOG(LogTemp, Warning, TEXT("CharacterDisk: %s"), *CharacterDisk->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("CharacterDisk: %s"), *CharacterDisk->GetName());
 }
 
 // Called every frame
@@ -92,24 +106,19 @@ void ABaseCharacter::LookAction(const FInputActionValue& value)
 }
 void ABaseCharacter::JumpAction()
 {
-	//CharacterDisk->ReattachDiskToSocket();
+	//TO DO
 	Jump();
 }
 
 void ABaseCharacter::ThrowDisk()
 {
 	CharacterDisk->Throw();
-
-	/* FVector DiskSpawnLocation = DiskSpawnPoint->GetComponentLocation();
-	FRotator DiskSpawnRotation = RootComponent->GetComponentRotation(); */
 }
 
 void ABaseCharacter::Dash()
 {
-	//const FVector ForwardDir = GetActorRotation().Vector();
 	const FVector Direction = GetCharacterMovement()->GetLastInputVector();
 	LaunchCharacter(Direction * DashDistance, true, true);
-
 }
 
 void ABaseCharacter::StartSprint()
