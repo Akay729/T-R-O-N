@@ -117,8 +117,11 @@ void ABaseCharacter::ThrowDisk()
 
 void ABaseCharacter::Dash()
 {
+	bIsDashing = true;
 	const FVector Direction = GetCharacterMovement()->GetLastInputVector();
 	LaunchCharacter(Direction * DashDistance, true, true);
+	FTimerHandle DashTimerHandle;
+	GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABaseCharacter::StopDashing, 0.5f);
 }
 
 void ABaseCharacter::StartSprint()
@@ -129,4 +132,9 @@ void ABaseCharacter::StartSprint()
 void ABaseCharacter::StopSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void ABaseCharacter::StopDashing()
+{
+    bIsDashing = false;
 }

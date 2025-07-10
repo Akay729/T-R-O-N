@@ -53,6 +53,13 @@ public:
 	
 	UFUNCTION()
 	void StopSprint();
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	bool bIsDashing;
+
+	void StopDashing();
+	UFUNCTION(BlueprintCallable)
+	bool IsDashing() const { return bIsDashing; }
 	
 	
 	//Mapping Context to set in the BP class
