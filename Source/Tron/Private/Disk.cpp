@@ -7,6 +7,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "BaseCharacter.h"
 #include "Components/HealthComponent.h"
+#include "TimerManager.h"
 // Sets default values
 #define ECC_DiskTrace ECollisionChannel::ECC_GameTraceChannel1
 
@@ -39,20 +40,12 @@ void ADisk::BeginPlay()
 void ADisk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRad, 36, FColor::Green, false, 0.1f);
-
 	if(CurrentState == EDiskState::Returning)
 	{
 		ReattachDiskToSocket();
 		//CurrentState = EDiskState::Attached;
 	}
-	if (!DiskMovementComponent->IsActive())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Movement DISATTIVO"));
-	}
-	
-	//UE_LOG(LogTemp, Warning, TEXT("Disk Velocity: %s"), *DiskMovementComponent->Velocity.ToString());
 }
 
 int32 ADisk::GetDiskBounce()
@@ -141,7 +134,18 @@ void ADisk::DiskSweepTraceForTaget(FVector ViewpointLocation, FRotator Viewpoint
 	Params.AddIgnoredActor(GetOwner());
 	Params.AddIgnoredActor(this);
 	bool isHit = GetWorld()->SweepSingleByChannel(OutHit, Start, End, FQuat::Identity, ECC_DiskTrace, SphereShape, Params);
-	if(isHit) UE_LOG(LogTemp, Warning, TEXT("Nigga colpito: %s"), *OutHit.GetActor()->GetName());
+	if (isHit)
+	{
+		AActor* HitActor = OutHit.GetActor();
+		if (HitActor)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Attore colpito: %s"), *HitActor->GetName());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Colpito qualcosa, ma nessun attore valido"));
+		}
+	}
 }
 
 void ADisk::DiskSweep()
@@ -155,19 +159,36 @@ void ADisk::GoBackToOwner()
 	{
 		AActor* DiskOwner = GetOwner();
 		if (DiskOwner == nullptr) return;
+
+		DiskTrajectoryTimeHandle;
+		DiskTimerDel.BindUObject(this, &ADisk::UpdateVelocityToActorLocation, DiskOwner);
+		GetWorldTimerManager().SetTimer(
+			DiskTrajectoryTimeHandle,
+			DiskTimerDel,
+			0.05f,
+			true
+		);
 		
-		FVector OwnerLocation = DiskOwner->GetActorLocation();
-		FVector DiskLocation = GetActorLocation();
-		
-		if(DiskMovementComponent == nullptr) return;
-		DiskMovementComponent->bShouldBounce = false;
-		//DiskMovementComponent->Velocity = FVector::ZeroVector;
-		
-		// Normalizza la direzione e scala per mantenere la stessa velocità
-		FVector DirectionToOwner = (OwnerLocation - DiskLocation).GetSafeNormal();
-		DiskMovementComponent->Velocity = DirectionToOwner * DiskSpeed;
 		CurrentState = EDiskState::Returning;
 	}
+}
+
+void ADisk::UpdateVelocityToActorLocation(AActor* TargetActor)
+{
+	//Questa funzione si puo usare sia per il lancio che per il ritorno.
+
+	if (!TargetActor || !DiskMovementComponent) return;
+
+	FVector TargetActorLocation = TargetActor->GetActorLocation();
+	FVector DiskLocation = GetActorLocation();
+	
+	if(DiskMovementComponent == nullptr) return;
+	DiskMovementComponent->bShouldBounce = false;
+	//DiskMovementComponent->Velocity = FVector::ZeroVector;
+	
+	// Normalizza la direzione e scala per mantenere la stessa velocità
+	FVector DirectionToTarget = (TargetActorLocation - DiskLocation).GetSafeNormal();
+	DiskMovementComponent->Velocity = DirectionToTarget * DiskSpeed;
 }
 
 void ADisk::ReattachDiskToSocket()
@@ -178,6 +199,7 @@ void ADisk::ReattachDiskToSocket()
 	FVector SocketLocation = DiskOwner->GetMesh()->GetSocketLocation(TEXT("RightHandSocket"));
 	if (FVector::Dist(GetActorLocation(), SocketLocation) < RangeToCatch)
 	{
+		GetWorldTimerManager().ClearTimer(DiskTrajectoryTimeHandle);
 		bool isAttached = AttachToComponent(DiskOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("RightHandSocket"));
 		SetActorRotation(DiskOwner->GetMesh()->GetSocketRotation(TEXT("RightHandSocket")));
 

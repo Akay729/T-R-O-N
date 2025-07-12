@@ -62,10 +62,10 @@ private:
 	UStaticMeshComponent* DiskMeshComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	float DiskSpeed = 1400;
+	float DiskSpeed = 4000;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float DiskMaxSpeed = 2000;
+	float DiskMaxSpeed = 5000;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float RangeToCatch = 150;
@@ -81,6 +81,9 @@ private:
 	FCollisionQueryParams Params;
 
 	void GoBackToOwner();
+	void UpdateVelocityToActorLocation(AActor* TargetActor);
+	FTimerHandle DiskTrajectoryTimeHandle;
+	FTimerDelegate DiskTimerDel;
 
 	/* UFUNCTION()
 	void DiskTrace(FHitResult &HitResult, FVector& ShotDirection); */
