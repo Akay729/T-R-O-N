@@ -36,9 +36,6 @@ void ABaseCharacter::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("HP: %f"), HealthComponent->GetHealthPercent()*100.f);
 	}
 	
-
-	UE_LOG(LogTemp, Display, TEXT("Your message"));
-	
 	//Disk Creation
 	if(DiskClass == nullptr) return;
 	CharacterDisk = GetWorld()->SpawnActor<ADisk>(DiskClass);
@@ -61,8 +58,6 @@ void ABaseCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	FVector ForwardDir = GetActorForwardVector();
 	FVector start = GetActorLocation();
-	DrawDebugLine(GetWorld(), start, start + ForwardDir * 500, FColor::Green, false, 0.1);
-
 }
 
 // Called to bind functionality to input

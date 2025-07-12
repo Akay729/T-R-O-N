@@ -41,8 +41,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
+	void DiskSweepTraceForTaget(FVector ViewpointLocation, FRotator ViewpointRotation);
 	void Throw();
 	void ReattachDiskToSocket();
+
+	UPROPERTY(EditDefaultsOnly)
+	float SphereRad = 20;
 
 	UPROPERTY()
 	EDiskState CurrentState = EDiskState::None;
@@ -71,7 +75,11 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	int32 BounceCount = 0;
+
+	void DiskSweep();
 	
+	FCollisionQueryParams Params;
+
 	void GoBackToOwner();
 
 	/* UFUNCTION()

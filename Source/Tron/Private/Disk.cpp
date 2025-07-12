@@ -8,6 +8,8 @@
 #include "BaseCharacter.h"
 #include "Components/HealthComponent.h"
 // Sets default values
+#define ECC_DiskTrace ECollisionChannel::ECC_GameTraceChannel1
+
 ADisk::ADisk()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -38,6 +40,8 @@ void ADisk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRad, 36, FColor::Green, false, 0.1f);
+
 	if(CurrentState == EDiskState::Returning)
 	{
 		ReattachDiskToSocket();
@@ -47,6 +51,7 @@ void ADisk::Tick(float DeltaTime)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Movement DISATTIVO"));
 	}
+	
 	//UE_LOG(LogTemp, Warning, TEXT("Disk Velocity: %s"), *DiskMovementComponent->Velocity.ToString());
 }
 
@@ -58,13 +63,15 @@ int32 ADisk::GetDiskBounce()
 void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {
     BounceCount++;
-    
-	//UE_LOG(LogTemp, Warning, TEXT("Rimbalzo #%d"), BounceCount);
 	
 	AActor* HitActor = ImpactResult.GetActor();
 	if (HitActor && this != HitActor && GetOwner() != HitActor)
 	{
-		ApplayDamage(HitActor, 25.0f);
+		if(HitActor->IsA(ABaseCharacter::StaticClass()))
+		{
+			GoBackToOwner();
+			ApplayDamage(HitActor, 25.0f);
+		}
 		UE_LOG(LogTemp, Warning, TEXT("Target Valido"));
 	}
 	
@@ -76,6 +83,7 @@ void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& Im
 
 void ADisk::ApplayDamage(AActor* TargetActor, float Amount)
 {
+	//Va reworkato con una iterface il prima possibile.
 	UHealthComponent* HealtComp = TargetActor->FindComponentByClass<UHealthComponent>();
 	if(HealtComp)
 	{
@@ -90,10 +98,15 @@ void ADisk::Throw()
 	if (DiskOwner == nullptr) return;
 	AController* OwnerController = GetOwnerController();
 	if(OwnerController == nullptr) return;
-	//if(CurrentState == EDiskState::Throw) return;
+	
+	// Get player viewpoint location and rotation 
+	FVector	ViewpointLocation;
+	FRotator ViewpointRotation;
+	OwnerController->GetPlayerViewPoint(ViewpointLocation, ViewpointRotation);
 	
 	if (CurrentState == EDiskState::Attached)
 	{
+		DiskSweepTraceForTaget(ViewpointLocation, ViewpointRotation);
 		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		
 		DiskMovementComponent->StopMovementImmediately();
@@ -105,22 +118,35 @@ void ADisk::Throw()
 		DiskMovementComponent->Activate(true);
 		DiskMovementComponent->Velocity = FVector::ZeroVector; // reset prima di lanciare
 		
-		FVector	ViewpointLocation;
-		FRotator ViewPortRotation;
-		OwnerController->GetPlayerViewPoint(ViewpointLocation,ViewPortRotation);
-		
 		DiskMovementComponent->bShouldBounce = true;
 		DiskMovementComponent->Bounciness = 1.f;
 		DiskMovementComponent->Friction = 0.f;
 		
-		FVector LaunchDirection = ViewPortRotation.Vector();
+		FVector LaunchDirection = ViewpointRotation.Vector();
 		DiskMovementComponent->Velocity = LaunchDirection * DiskSpeed;
 		SetActorRotation(LaunchDirection.Rotation());
 		SetActorEnableCollision(true);
 		
 		CurrentState = EDiskState::Throw;
 	}
-	//UE_LOG(LogTemp, Display, TEXT("Owner: %s"), *DiskOwner->GetName());
+}
+
+void ADisk::DiskSweepTraceForTaget(FVector ViewpointLocation, FRotator ViewpointRotation)
+{
+	FHitResult OutHit;
+	FVector Start = ViewpointLocation;
+	FVector End = Start + ViewpointRotation.Vector() * 1000;
+	FCollisionShape SphereShape = FCollisionShape::MakeSphere(SphereRad);
+	DrawDebugLine(GetWorld(),Start, End,FColor::Green);
+	Params.AddIgnoredActor(GetOwner());
+	Params.AddIgnoredActor(this);
+	bool isHit = GetWorld()->SweepSingleByChannel(OutHit, Start, End, FQuat::Identity, ECC_DiskTrace, SphereShape, Params);
+	if(isHit) UE_LOG(LogTemp, Warning, TEXT("Nigga colpito: %s"), *OutHit.GetActor()->GetName());
+}
+
+void ADisk::DiskSweep()
+{
+	//Crea uno sweep costante nella direzione del discoper garantire l'hit
 }
 
 void ADisk::GoBackToOwner()
