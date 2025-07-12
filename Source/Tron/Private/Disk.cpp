@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "BaseCharacter.h"
+#include "Components/HealthComponent.h"
 // Sets default values
 ADisk::ADisk()
 {
@@ -21,7 +22,6 @@ ADisk::ADisk()
 	DiskMovementComponent->Velocity = FVector::ZeroVector;
 	DiskMovementComponent->ProjectileGravityScale = 0.0f;
 	DiskMovementComponent->OnProjectileBounce.AddDynamic(this, &ADisk::OnProjectileBounce);
-
 }
 
 // Called when the game starts or when spawned
@@ -47,7 +47,7 @@ void ADisk::Tick(float DeltaTime)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Movement DISATTIVO"));
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Disk Velocity: %s"), *DiskMovementComponent->Velocity.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("Disk Velocity: %s"), *DiskMovementComponent->Velocity.ToString());
 }
 
 int32 ADisk::GetDiskBounce()
@@ -60,9 +60,27 @@ void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& Im
     BounceCount++;
     
 	//UE_LOG(LogTemp, Warning, TEXT("Rimbalzo #%d"), BounceCount);
+	
+	AActor* HitActor = ImpactResult.GetActor();
+	if (HitActor && this != HitActor && GetOwner() != HitActor)
+	{
+		ApplayDamage(HitActor, 25.0f);
+		UE_LOG(LogTemp, Warning, TEXT("Target Valido"));
+	}
+	
 	if (BounceCount >= MaxBounces)
 	{	
 		GoBackToOwner();
+	}
+}
+
+void ADisk::ApplayDamage(AActor* TargetActor, float Amount)
+{
+	UHealthComponent* HealtComp = TargetActor->FindComponentByClass<UHealthComponent>();
+	if(HealtComp)
+	{
+		HealtComp->TakeDamage(Amount);
+		UE_LOG(LogTemp, Warning, TEXT(" Actor: %s Danno subito: %f Da Actor:"), *TargetActor->GetName(), Amount, *GetOwner()->GetName());
 	}
 }
 
@@ -149,6 +167,7 @@ void ADisk::ReattachDiskToSocket()
 	}
 }
 
+//Utils
 AController* ADisk::GetOwnerController()
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());

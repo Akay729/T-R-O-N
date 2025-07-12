@@ -35,6 +35,8 @@ protected:
 	UFUNCTION()
 	void OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 
+	void ApplayDamage(AActor* TargetActor, float Amount);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -54,7 +56,6 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, Category="Costum")
 	UStaticMeshComponent* DiskMeshComponent;
-
 
 	UPROPERTY(EditDefaultsOnly)
 	float DiskSpeed = 1400;

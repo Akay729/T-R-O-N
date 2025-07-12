@@ -40,6 +40,8 @@ void UHealthComponent::TakeDamage(float DamageAmount)
 
 	if (IsDead())
 	{
+		AActor* Dude = GetOwner();
+		if(Dude) Dude->K2_DestroyActor();
 		OnDeath.Broadcast();
 	}
 }
