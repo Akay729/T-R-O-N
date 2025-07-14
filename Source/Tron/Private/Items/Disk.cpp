@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Disk.h"
+#include "Items/Disk.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -41,11 +41,11 @@ void ADisk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRad, 36, FColor::Green, false, 0.1f);
-	if(CurrentState == EDiskState::Returning)
+	/* if(CurrentState == EDiskState::Returning)
 	{
 		ReattachDiskToSocket();
 		//CurrentState = EDiskState::Attached;
-	}
+	} */
 }
 
 int32 ADisk::GetDiskBounce()
@@ -130,7 +130,7 @@ void ADisk::DiskSweepTraceForTaget(FVector ViewpointLocation, FRotator Viewpoint
 	FVector Start = ViewpointLocation;
 	FVector End = Start + ViewpointRotation.Vector() * 1000;
 	FCollisionShape SphereShape = FCollisionShape::MakeSphere(SphereRad);
-	DrawDebugLine(GetWorld(),Start, End,FColor::Green);
+	//DrawDebugCapsule()
 	Params.AddIgnoredActor(GetOwner());
 	Params.AddIgnoredActor(this);
 	bool isHit = GetWorld()->SweepSingleByChannel(OutHit, Start, End, FQuat::Identity, ECC_DiskTrace, SphereShape, Params);
@@ -165,7 +165,7 @@ void ADisk::GoBackToOwner()
 		GetWorldTimerManager().SetTimer(
 			DiskTrajectoryTimeHandle,
 			DiskTimerDel,
-			0.05f,
+			0.075f,
 			true
 		);
 		
@@ -189,6 +189,7 @@ void ADisk::UpdateVelocityToActorLocation(AActor* TargetActor)
 	// Normalizza la direzione e scala per mantenere la stessa velocità
 	FVector DirectionToTarget = (TargetActorLocation - DiskLocation).GetSafeNormal();
 	DiskMovementComponent->Velocity = DirectionToTarget * DiskSpeed;
+	ReattachDiskToSocket();
 }
 
 void ADisk::ReattachDiskToSocket()

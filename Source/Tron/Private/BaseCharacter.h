@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Interfaces/Damagable.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
@@ -13,7 +14,7 @@ class UHealthComponent;
 struct FInputActionValue;
 
 UCLASS()
-class ABaseCharacter : public ACharacter
+class ABaseCharacter : public ACharacter, public IDamagable
 {
 	GENERATED_BODY()
 
@@ -92,7 +93,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Components")
 	USceneComponent* DiskSpawnPoint;
 
-
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TSubclassOf<class ADisk> DiskClass;	
 
@@ -106,5 +106,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Movement")
 	float SprintSpeed = 650.f;
+
+public:
+	//Combat System Function
+	virtual float GetCurrentHealth() override;
+	virtual float GetMaxHealth() override;
+	virtual float Heal(float Amount) override;
+	virtual bool TakeDamage(FDamageInfo DamageInfo) override;
 
 };

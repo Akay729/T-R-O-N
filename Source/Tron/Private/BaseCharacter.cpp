@@ -2,13 +2,12 @@
 
 
 #include "BaseCharacter.h"
-#include "Disk.h"
 #include "InputAction.h"
 #include "InputMappingContext.h"
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Disk.h"
+#include "Items/Disk.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
@@ -56,11 +55,13 @@ void ABaseCharacter::BeginPlay()
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FVector ForwardDir = GetActorForwardVector();
-	FVector start = GetActorLocation();
+
+/* 	FVector ForwardDir = GetActorForwardVector();
+	FVector start = GetActorLocation(); */
 }
 
-// Called to bind functionality to input
+// Called to bind functionality to input 
+// Need Refactor to make it modular with costum commands
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -92,6 +93,7 @@ void ABaseCharacter::MoveAction(const FInputActionValue& value)
 	AddMovementInput(GetActorForwardVector(), MoveVector.Y);
 	AddMovementInput(GetActorRightVector(), MoveVector.X);
 }
+
 void ABaseCharacter::LookAction(const FInputActionValue& value)
 {
 	FVector2D LookVector = value.Get<FVector2D>();
@@ -99,15 +101,11 @@ void ABaseCharacter::LookAction(const FInputActionValue& value)
 	AddControllerPitchInput(LookVector.Y*-1);
 	
 }
+
 void ABaseCharacter::JumpAction()
 {
 	//TO DO
 	Jump();
-}
-
-void ABaseCharacter::ThrowDisk()
-{
-	CharacterDisk->Throw();
 }
 
 void ABaseCharacter::Dash()
@@ -126,13 +124,34 @@ void ABaseCharacter::StartSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 }
-
 void ABaseCharacter::StopSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
-
 void ABaseCharacter::StopDashing()
 {
-    bIsDashing = false;
+	bIsDashing = false;
+}
+
+////////// ----------- COMBAT SYSTEM METHOD -----------//////////
+void ABaseCharacter::ThrowDisk()
+{
+	CharacterDisk->Throw();
+}
+
+float ABaseCharacter::GetCurrentHealth()
+{
+	return 0;
+}
+float ABaseCharacter::GetMaxHealth()
+{
+	return 0;
+} 
+float ABaseCharacter::Heal(float Amount)
+{
+	return 0;
+} 
+bool ABaseCharacter::TakeDamage(FDamageInfo DamageInfo)
+{
+	return 0;
 }
