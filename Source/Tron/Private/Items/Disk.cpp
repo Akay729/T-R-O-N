@@ -181,8 +181,7 @@ void ADisk::UpdateVelocityToActorLocation(AActor* TargetActor)
 
 	FVector TargetActorLocation = TargetActor->GetActorLocation();
 	FVector DiskLocation = GetActorLocation();
-	
-	if(DiskMovementComponent == nullptr) return;
+
 	DiskMovementComponent->bShouldBounce = false;
 	//DiskMovementComponent->Velocity = FVector::ZeroVector;
 	
