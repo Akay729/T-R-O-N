@@ -124,7 +124,10 @@ private:
 	float MaxArmor = 1.0f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float MaxHealt = 100.0f;
+	float MaxHealth = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float DashArmor = 0.50f;
 
 
 	// Timer handle

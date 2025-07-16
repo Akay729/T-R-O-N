@@ -14,7 +14,6 @@ UHealthComponent::UHealthComponent()
 	// ...
 }
 
-
 // Called when the game starts
 void UHealthComponent::BeginPlay()
 {
@@ -22,7 +21,6 @@ void UHealthComponent::BeginPlay()
 	CurrentHealth = MaxHealth;
 	CurrentArmor = FMath::Clamp(BaseArmor, 0.f, MaxArmor);
 }
-
 
 // Called every frame
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -47,7 +45,6 @@ void UHealthComponent::TakeDamage(float DamageAmount)
 		OnDeath.Broadcast();
 	}
 }
-
 
 bool UHealthComponent::IsDead()
 {
@@ -78,9 +75,9 @@ float UHealthComponent::GetCurrentArmor()
 }
 
 // Heal
-float  UHealthComponent::Heal(float HealAmount)
+float UHealthComponent::Heal(float HealAmount)
 {
-	if (IsDead()) return;
+	if (IsDead()) return 0;
 	CurrentHealth = FMath::Clamp(CurrentHealth + HealAmount, 0.f, MaxHealth);
 	return CurrentHealth;
 }

@@ -54,14 +54,14 @@ public:
 	void TakeDamage(float Amount);
 	
 	UFUNCTION(BlueprintCallable)
-	void InitializeStats(float baseArmor, float maxArmor, float tempArmor, float maxHealth);
+	void InitializeStats(float defaultArmor, float mArmor, float mHealth);
 	
 	UFUNCTION(BlueprintCallable)
 	float Heal(float Amount);
 	
 	UFUNCTION(BlueprintCallable)
 	float GetCurrentHealth() const;
-	
+
 	UFUNCTION(BlueprintCallable)
 	float GetMaxHealth() const;
 	
@@ -69,10 +69,13 @@ public:
 	float GetHealthPercent() const;
 	
 	UFUNCTION(BlueprintCallable)
-	float SetArmor(float value);
+	float ModifyCurrentArmor(float value);
 	
 	UFUNCTION(BlueprintCallable)
-	float CurrentArmor();
+	float ResetCurrentArmor();
+	
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentArmor();
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsDead();

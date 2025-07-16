@@ -123,17 +123,17 @@ void ABaseCharacter::Dash()
 void ABaseCharacter::StartDashing()
 {
 	bIsDashing = true;
-	HealthComponent->ModifyCurrentArmor(Armor);
+	HealthComponent->ModifyCurrentArmor(DashArmor);
 
-	float CurrentArmor = HealthComponent->CurrentArmor();
+	float CurrentArmor = HealthComponent->GetCurrentArmor();
 	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
 }
 void ABaseCharacter::StopDashing()
 {
 	bIsDashing = false;
-	HealthComponent->ModifyCurrentArmor(-Armor);
+	HealthComponent->ModifyCurrentArmor(-DashArmor);
 
-	float CurrentArmor = HealthComponent->CurrentArmor();
+	float CurrentArmor = HealthComponent->GetCurrentArmor();
 	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
 }
 
