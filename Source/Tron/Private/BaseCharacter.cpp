@@ -32,16 +32,17 @@ void ABaseCharacter::BeginPlay()
 
 	if (HealthComponent)
 	{
+		HealthComponent->InitializeStats(BaseArmor, MaxArmor, MaxHealth);
 		UE_LOG(LogTemp, Warning, TEXT("HP: %f"), HealthComponent->GetHealthPercent()*100.f);
 	}
 	
 	//Disk Creation
-	if(DiskClass == nullptr) return;
+	if(!DiskClass) return;
 	CharacterDisk = GetWorld()->SpawnActor<ADisk>(DiskClass);
-	CharacterDisk->SetActorEnableCollision(false);
-	
+
 	//Attach Disk to mesh socket
-	if(CharacterDisk == nullptr) return;
+	if(!CharacterDisk) return;
+	CharacterDisk->SetActorEnableCollision(false);
 	CharacterDisk->AttachToComponent(
 		GetMesh(), 
 		FAttachmentTransformRules::SnapToTargetNotIncludingScale, 
@@ -107,19 +108,36 @@ void ABaseCharacter::JumpAction()
 	//TO DO
 	Jump();
 }
-
+////////// ----------- DASH METHOD -----------//////////
 void ABaseCharacter::Dash()
 {
-	if(!bIsDashing)
+	if(!IsDashing())
 	{
-		bIsDashing = true;
+		StartDashing();
 		const FVector Direction = GetCharacterMovement()->GetLastInputVector();
 		LaunchCharacter(Direction * DashDistance, true, true);
-		FTimerHandle DashTimerHandle;
+		
 		GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABaseCharacter::StopDashing, 0.5f);
 	}
 }
+void ABaseCharacter::StartDashing()
+{
+	bIsDashing = true;
+	HealthComponent->ModifyCurrentArmor(Armor);
 
+	float CurrentArmor = HealthComponent->CurrentArmor();
+	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
+}
+void ABaseCharacter::StopDashing()
+{
+	bIsDashing = false;
+	HealthComponent->ModifyCurrentArmor(-Armor);
+
+	float CurrentArmor = HealthComponent->CurrentArmor();
+	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
+}
+
+////////// ----------- SPRINT METHOD -----------//////////
 void ABaseCharacter::StartSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
@@ -128,30 +146,26 @@ void ABaseCharacter::StopSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
-void ABaseCharacter::StopDashing()
-{
-	bIsDashing = false;
-}
 
 ////////// ----------- COMBAT SYSTEM METHOD -----------//////////
 void ABaseCharacter::ThrowDisk()
 {
-	CharacterDisk->Throw();
+	if (CharacterDisk) CharacterDisk->Throw();
 }
-
 float ABaseCharacter::GetCurrentHealth()
 {
-	return 0;
+	return HealthComponent->GetCurrentHealth();
 }
 float ABaseCharacter::GetMaxHealth()
 {
-	return 0;
+	return HealthComponent->GetMaxHealth();
 } 
 float ABaseCharacter::Heal(float Amount)
 {
-	return 0;
+	return HealthComponent->Heal(Amount);
 } 
 bool ABaseCharacter::TakeDamage(FDamageInfo DamageInfo)
 {
+	//ToDo
 	return 0;
 }

@@ -20,6 +20,7 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	CurrentHealth = MaxHealth;
+	CurrentArmor = FMath::Clamp(BaseArmor, 0.f, MaxArmor);
 }
 
 
@@ -33,31 +34,68 @@ void UHealthComponent::TakeDamage(float DamageAmount)
 {
 	if (IsDead()) return;
 
-	float DamageAfterArmor = FMath::Max(DamageAmount - DamageAmount * Armor, 0.f);
+	float ArmorAbsorption = FMath::Clamp(CurrentArmor, 0.f, 1.f);
+	float DamageAfterArmor = DamageAmount * (1.f - ArmorAbsorption);
 	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAfterArmor, 0.f, MaxHealth);
 
 	OnHealthChanged.Broadcast(CurrentHealth);
 
 	if (IsDead())
 	{
-		AActor* Dude = GetOwner();
-		if(Dude) Dude->K2_DestroyActor();
+		AActor* CompOwner = GetOwner();
+		if(CompOwner) CompOwner->K2_DestroyActor();
 		OnDeath.Broadcast();
 	}
 }
 
-void UHealthComponent::Heal(float HealAmount)
-{
-	if (IsDead()) return;
-	CurrentHealth = FMath::Clamp(CurrentHealth + HealAmount, 0.f, MaxHealth);
-}
 
 bool UHealthComponent::IsDead()
 {
-    return CurrentHealth <= 0;
+	return CurrentHealth <= 0;
+}
+
+void UHealthComponent::InitializeStats(float baseArmor, float maxArmor, float maxHealth)
+{
+	BaseArmor =  FMath::Clamp(baseArmor, 0.f, 1.f);
+	MaxArmor  = FMath::Clamp(maxArmor, 0.f, 1.f);
+	MaxHealth = maxHealth;
+}
+
+// Armor
+float UHealthComponent::ModifyCurrentArmor(float value)
+{
+	CurrentArmor = FMath::Clamp(CurrentArmor + value, BaseArmor, MaxArmor);
+	return CurrentArmor;
+}
+float UHealthComponent::ResetCurrentArmor()
+{
+	CurrentArmor = BaseArmor;
+	return CurrentArmor;
+}
+float UHealthComponent::GetCurrentArmor()
+{
+	return CurrentArmor;
+}
+
+// Heal
+float  UHealthComponent::Heal(float HealAmount)
+{
+	if (IsDead()) return;
+	CurrentHealth = FMath::Clamp(CurrentHealth + HealAmount, 0.f, MaxHealth);
+	return CurrentHealth;
+}
+
+float UHealthComponent::GetCurrentHealth() const
+{
+	return CurrentHealth;
+}
+
+float UHealthComponent::GetMaxHealth() const
+{
+	return MaxHealth;
 }
 
 float UHealthComponent::GetHealthPercent() const
 {
-    return CurrentHealth / MaxHealth;
+	return CurrentHealth / MaxHealth;
 }

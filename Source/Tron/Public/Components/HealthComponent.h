@@ -27,9 +27,18 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Healt")
 	float CurrentHealth;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Armor")
+	/** Should be a percentage between 0.0 and 1.0 */
+	float MaxArmor = 1.0f;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Healt")
-	float Armor = 0.25f; // Riduce il danno preso di una percentuale 
+	UPROPERTY(EditDefaultsOnly, Category = "Armor")
+	/** Should be a percentage between 0.0 and 1.0 */
+	float BaseArmor = 0;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Armor")
+	/** Should be a percentage between 0.0 and 1.0 */
+	float CurrentArmor; // Riduce il danno preso di una percentuale
 
 public:	
 	// Called every frame
@@ -45,11 +54,26 @@ public:
 	void TakeDamage(float Amount);
 	
 	UFUNCTION(BlueprintCallable)
-	void Heal(float Amount);
-
+	void InitializeStats(float baseArmor, float maxArmor, float tempArmor, float maxHealth);
+	
 	UFUNCTION(BlueprintCallable)
-	bool IsDead();
+	float Heal(float Amount);
+	
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentHealth() const;
+	
+	UFUNCTION(BlueprintCallable)
+	float GetMaxHealth() const;
 	
 	UFUNCTION(BlueprintCallable)
 	float GetHealthPercent() const;
+	
+	UFUNCTION(BlueprintCallable)
+	float SetArmor(float value);
+	
+	UFUNCTION(BlueprintCallable)
+	float CurrentArmor();
+	
+	UFUNCTION(BlueprintCallable)
+	bool IsDead();
 };

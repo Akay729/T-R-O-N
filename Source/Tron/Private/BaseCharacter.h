@@ -19,99 +19,114 @@ class ABaseCharacter : public ACharacter, public IDamagable
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
+	// Constructor
 	ABaseCharacter();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
+	// Overrides
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	//Input Action Function
+
+	// Input Actions
 	UFUNCTION()
 	void MoveAction(const FInputActionValue& value);
-	
+
 	UFUNCTION()
 	void LookAction(const FInputActionValue& value);
-	
+
 	UFUNCTION()
 	void JumpAction();
-	
+
 	UFUNCTION()
 	void ThrowDisk();
-	
+
 	UFUNCTION()
 	void Dash();
-	
+
 	UFUNCTION()
 	void StartSprint();
-	
+
 	UFUNCTION()
 	void StopSprint();
 
-	UPROPERTY(BlueprintReadOnly, Category = "Movement")
-	bool bIsDashing;
-
-	void StopDashing();
+	// Dashing
 	UFUNCTION(BlueprintCallable)
 	bool IsDashing() const { return bIsDashing; }
-	
-	
-	//Mapping Context to set in the BP class
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-	UInputMappingContext* DefaultMappingContext;
 
-	//Input Action to set in the BP class
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-	UInputAction* IA_Move;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-	UInputAction* IA_Look;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-	UInputAction* IA_Jump;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-	UInputAction* IA_ThrowDisk;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-	UInputAction* IA_Dash;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-	UInputAction* IA_Sprint;
+	void StartDashing();
+	void StopDashing();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UHealthComponent* HealthComponent;
-
-private:
-	UPROPERTY(EditAnywhere, Category = "Components")
-	USceneComponent* DiskSpawnPoint;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TSubclassOf<class ADisk> DiskClass;	
-
-	ADisk* CharacterDisk;
-
-	UPROPERTY(EditDefaultsOnly)
-	float DashDistance = 500;
-
-	UPROPERTY(EditDefaultsOnly, Category="Movement")
-	float WalkSpeed = 350.f;
-
-	UPROPERTY(EditDefaultsOnly, Category="Movement")
-	float SprintSpeed = 650.f;
-
-public:
-	//Combat System Function
+	// Damagable Interface
 	virtual float GetCurrentHealth() override;
 	virtual float GetMaxHealth() override;
 	virtual float Heal(float Amount) override;
 	virtual bool TakeDamage(FDamageInfo DamageInfo) override;
 
+protected:
+	// BeginPlay
+	virtual void BeginPlay() override;
+
+	// Movement flags
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	bool bIsDashing;
+
+	// Health Component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UHealthComponent* HealthComponent;
+
+	// Input Mapping & Actions
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputMappingContext* DefaultMappingContext;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Move;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Look;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Jump;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_ThrowDisk;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Dash;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Sprint;
+
+private:
+	// Components
+	UPROPERTY(EditAnywhere, Category = "Components")
+	USceneComponent* DiskSpawnPoint;
+
+	// Disk setup
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TSubclassOf<class ADisk> DiskClass;
+
+	ADisk* CharacterDisk;
+
+	// Movement values
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float DashDistance = 500.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float WalkSpeed = 350.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float SprintSpeed = 650.f;
+
+	// Temporary armor boost for dash
+	UPROPERTY(EditDefaultsOnly)
+	float BaseArmor = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MaxArmor = 1.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MaxHealt = 100.0f;
+
+
+	// Timer handle
+	FTimerHandle DashTimerHandle;
 };
