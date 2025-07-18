@@ -11,6 +11,7 @@ class UInputMappingContext;
 class UInputAction;
 class ADisk;
 class UHealthComponent;
+class UCombatComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -72,7 +73,11 @@ protected:
 	// Health Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UHealthComponent* HealthComponent;
-
+	
+	// Combat Component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UCombatComponent* CombatComponent;
+	
 	// Input Mapping & Actions
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputMappingContext* DefaultMappingContext;

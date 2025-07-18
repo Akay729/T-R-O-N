@@ -7,6 +7,9 @@
 #include "DataTypes/DamageTypes.h"
 #include "CombatComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBlocked, bool, WasParryable);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamageResponse, DmgResponses, Response);
+
 class UHealthComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -27,20 +30,37 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION()
-	void ReciveDamage(FDamageInfo DamageInfo);
+	void ReciveDamage(FDamageInfo DamageInfo, bool &bWasDamage);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	bool SetIsBlocking(bool value);
-	UFUNCTION()
-	bool SetIsInvicible(bool value);
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
+	bool SetIsInvincible(bool value);
+	UFUNCTION(BlueprintCallable)
 	bool SetIsParring(bool value);
+	UFUNCTION(BlueprintCallable)
+	bool SetIsInterruptible (bool value);
+
+	//Delgates
+	UPROPERTY()
+	FOnBlocked OnBlocked;
+	UPROPERTY()
+	FOnDamageResponse OnDamageResponse;
 	
 private:
+	
+	UPROPERTY()
 	UHealthComponent* HealthComp;
+	
+	UPROPERTY()
 	AActor* CompOwner;
-
+	
+	UPROPERTY()
 	bool bIsBlocking;
-	bool bIsInvicible;
+	UPROPERTY()
+	bool bIsInvincible;
+	UPROPERTY()
 	bool bIsParring;
+	UPROPERTY()
+	bool bIsInterruptible;
 };

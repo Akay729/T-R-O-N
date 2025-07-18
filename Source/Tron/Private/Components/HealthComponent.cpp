@@ -79,6 +79,7 @@ float UHealthComponent::Heal(float HealAmount)
 {
 	if (IsDead()) return 0;
 	CurrentHealth = FMath::Clamp(CurrentHealth + HealAmount, 0.f, MaxHealth);
+	OnHealthChanged.Broadcast(CurrentHealth);
 	return CurrentHealth;
 }
 

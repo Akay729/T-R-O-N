@@ -12,17 +12,21 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Components/HealthComponent.h"
+#include "Components/CombatComponent.h"
+
 // Sets default values
 ABaseCharacter::ABaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Healt Component"));
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("Combat Component"));
 
 	//NOT USED YET
 	DiskSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Disk SpawnPoint Component"));
 	DiskSpawnPoint->SetupAttachment(RootComponent);
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 // Called when the game starts or when spawned
@@ -88,6 +92,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
+////////// ----------- MOVEMENT AND CAMERA MOVEMENT -----------//////////
 void ABaseCharacter::MoveAction(const FInputActionValue& value)
 {
 	FVector2D MoveVector = value.Get<FVector2D>();
@@ -103,11 +108,13 @@ void ABaseCharacter::LookAction(const FInputActionValue& value)
 	
 }
 
+////////// ----------- JUMP -----------//////////
 void ABaseCharacter::JumpAction()
 {
 	//TO DO
 	Jump();
 }
+
 ////////// ----------- DASH METHOD -----------//////////
 void ABaseCharacter::Dash()
 {
@@ -166,6 +173,7 @@ float ABaseCharacter::Heal(float Amount)
 } 
 bool ABaseCharacter::TakeDamage(FDamageInfo DamageInfo)
 {
-	//ToDo
-	return 0;
+	bool WasDamage;
+	CombatComponent->ReciveDamage(DamageInfo, WasDamage);
+	return WasDamage;
 }

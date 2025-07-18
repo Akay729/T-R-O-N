@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CombatComponent.h"
+#include "Components/CombatComponent.h"
 #include "DataTypes/DamageTypes.h"
 #include "Components/HealthComponent.h"
 
@@ -40,28 +40,40 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 }
 
-void UCombatComponent::ReciveDamage(FDamageInfo DamageInfo)
+void UCombatComponent::ReciveDamage(FDamageInfo DamageInfo, bool &bWasDamage)
 {
-	if (!CompOwner) return;
-	
-	if (HealthComp->IsDead()) return;
+	bWasDamage = false;
+	if (!CompOwner || HealthComp->IsDead()) return;
 
-	if (bIsInvicible && !DamageInfo.ShouldDamageInvincible) return;
+	//Invicible
+	if (bIsInvincible && !DamageInfo.ShouldDamageInvincible) return;
 	
+	//Parry
 	if (DamageInfo.CanBeParried && bIsParring)
 	{
-		//Parry
+		return;
 	}
 
+	//Block
 	if (DamageInfo.CanBeBlocked && bIsBlocking)
 	{
+		OnBlocked.Broadcast(DamageInfo.CanBeParried);
+		//Event dipsacer
 		//Check stamina
 		//if is enough block no damage taken and stamaina reduced
 		//Else deplate stamina and take damage 
+		return;
+	}
 
+	//Interrupt
+	if(bIsInterruptible && DamageInfo.ShouldForceInterrupt )
+	{
+		OnDamageResponse.Broadcast(DamageInfo.DmgResponse);
+		//Interrompi Azione
 	}
 
 	HealthComp->TakeDamage(DamageInfo.Amount);
+	bWasDamage = true;
 }
 
 bool UCombatComponent::SetIsBlocking(bool value)
@@ -70,14 +82,20 @@ bool UCombatComponent::SetIsBlocking(bool value)
     return bIsBlocking;
 }
 
-bool UCombatComponent::SetIsInvicible(bool value)
+bool UCombatComponent::SetIsInvincible(bool value)
 {
-	bIsInvicible = value;
-    return bIsInvicible;
+	bIsInvincible = value;
+    return bIsInvincible;
 }
 
 bool UCombatComponent::SetIsParring(bool value)
 {
 	bIsParring = value;
     return bIsParring;
+}
+
+bool UCombatComponent::SetIsInterruptible(bool value)
+{
+	bIsInterruptible = value;
+    return bIsInterruptible;
 }
