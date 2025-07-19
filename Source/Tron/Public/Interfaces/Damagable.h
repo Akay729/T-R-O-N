@@ -26,6 +26,7 @@ public:
 	virtual float GetCurrentHealth() = 0;
 	virtual float GetMaxHealth() = 0;
 	virtual float Heal(float Amount) = 0;
-	virtual bool TakeDamage(FDamageInfo DamageInfo) = 0; //applay dmg and Return if was damage
+	UFUNCTION()
+	virtual bool ReciveDamage(FDamageInfo DamageInfo) = 0; //applay dmg and Return if was damage
 	
 };

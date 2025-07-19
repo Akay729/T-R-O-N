@@ -48,6 +48,10 @@ public:
 
 	UFUNCTION()
 	void StopSprint();
+	
+	
+	UFUNCTION()
+	void MeleeAttack();
 
 	// Dashing
 	UFUNCTION(BlueprintCallable)
@@ -60,7 +64,7 @@ public:
 	virtual float GetCurrentHealth() override;
 	virtual float GetMaxHealth() override;
 	virtual float Heal(float Amount) override;
-	virtual bool TakeDamage(FDamageInfo DamageInfo) override;
+	virtual bool ReciveDamage(FDamageInfo DamageInfo);
 
 protected:
 	// BeginPlay
@@ -90,15 +94,18 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_Jump;
-
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Dash;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Sprint;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_ThrowDisk;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-	UInputAction* IA_Dash;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-	UInputAction* IA_Sprint;
+	UInputAction* IA_MeleeAttack;
 
 private:
 	// Components
@@ -134,6 +141,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float DashArmor = 0.50f;
 
+	UPROPERTY(EditDefaultsOnly)
+	float MeleeAttackRange = 100.0f;
 
 	// Timer handle
 	FTimerHandle DashTimerHandle;

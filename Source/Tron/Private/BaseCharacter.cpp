@@ -42,7 +42,10 @@ void ABaseCharacter::BeginPlay()
 	
 	//Disk Creation
 	if(!DiskClass) return;
-	CharacterDisk = GetWorld()->SpawnActor<ADisk>(DiskClass);
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+
+	CharacterDisk = GetWorld()->SpawnActor<ADisk>(DiskClass, SpawnParams);
 
 	//Attach Disk to mesh socket
 	if(!CharacterDisk) return;
@@ -51,7 +54,7 @@ void ABaseCharacter::BeginPlay()
 		GetMesh(), 
 		FAttachmentTransformRules::SnapToTargetNotIncludingScale, 
 		TEXT("RightHandSocket"));
-	CharacterDisk->SetOwner(this);
+	//CharacterDisk->SetOwner(this);
 
 	//UE_LOG(LogTemp, Warning, TEXT("CharacterDisk: %s"), *CharacterDisk->GetName());
 }
@@ -84,6 +87,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 			Input->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ABaseCharacter::LookAction);
 			Input->BindAction(IA_Jump, ETriggerEvent::Started, this, &ABaseCharacter::JumpAction);
 			Input->BindAction(IA_ThrowDisk, ETriggerEvent::Started, this, &ABaseCharacter::ThrowDisk);
+			Input->BindAction(IA_MeleeAttack, ETriggerEvent::Started, this, &ABaseCharacter::MeleeAttack);
 			Input->BindAction(IA_Dash, ETriggerEvent::Started, this, &ABaseCharacter::Dash);
 			Input->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &ABaseCharacter::StartSprint);
 			Input->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &ABaseCharacter::StopSprint);
@@ -113,6 +117,13 @@ void ABaseCharacter::JumpAction()
 {
 	//TO DO
 	Jump();
+}
+
+void ABaseCharacter::MeleeAttack()
+{	
+	FVector Start = GetActorLocation();
+	FVector End = Start + GetActorForwardVector() *  MeleeAttackRange;
+	CharacterDisk->DoMeleeAttack(Start, End);
 }
 
 ////////// ----------- DASH METHOD -----------//////////
@@ -171,7 +182,7 @@ float ABaseCharacter::Heal(float Amount)
 {
 	return HealthComponent->Heal(Amount);
 } 
-bool ABaseCharacter::TakeDamage(FDamageInfo DamageInfo)
+bool ABaseCharacter::ReciveDamage(FDamageInfo DamageInfo)
 {
 	bool WasDamage;
 	CombatComponent->ReciveDamage(DamageInfo, WasDamage);

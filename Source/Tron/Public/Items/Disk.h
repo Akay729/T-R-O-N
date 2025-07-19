@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "DataTypes/DamageTypes.h"
 #include "Disk.generated.h"
 
 UENUM(BlueprintType)
@@ -15,6 +16,7 @@ enum class EDiskState : uint8 {
 	Deflected	UMETA(DisplayName = "Deflected")
 };
 
+class ABaseCharacter;
 
 UCLASS()
 class TRON_API ADisk : public AActor
@@ -44,9 +46,19 @@ public:
 	void DiskSweepTraceForTaget(FVector ViewpointLocation, FRotator ViewpointRotation);
 	void Throw();
 	void ReattachDiskToSocket();
+	void DoMeleeAttack(FVector StartPosition, FVector EndPosition);
 
 	UPROPERTY(EditDefaultsOnly)
-	float SphereRad = 20;
+	float DiskSphereRad = 20;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float MeleeAttackSphereRad = 20;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float MeleeDamage = 50;
+	
+	UPROPERTY(EditDefaultsOnly)
+	FDamageInfo MeleeDamageInfo;
 
 	UPROPERTY()
 	EDiskState CurrentState = EDiskState::None;
@@ -58,6 +70,11 @@ public:
 	class UProjectileMovementComponent* DiskMovementComponent;
 
 private:
+
+	AActor* DiskOwner;
+	AController* OwnerController;
+	ABaseCharacter* DiskCharacterOwner;
+
 	UPROPERTY(VisibleAnywhere, Category="Costum")
 	UStaticMeshComponent* DiskMeshComponent;
 
@@ -76,7 +93,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	int32 BounceCount = 0;
 
-	void DiskSweep();
+	void DiskSweep(); //TODO
 	
 	FCollisionQueryParams Params;
 
