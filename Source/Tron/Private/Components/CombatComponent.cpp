@@ -58,6 +58,7 @@ void UCombatComponent::ReciveDamage(FDamageInfo DamageInfo, bool &bWasDamage)
 	if (DamageInfo.CanBeBlocked && bIsBlocking)
 	{
 		OnBlocked.Broadcast(DamageInfo.CanBeParried);
+		UE_LOG(LogTemp, Warning, TEXT("Blocked"));
 		//Event dipsacer
 		//Check stamina
 		//if is enough block no damage taken and stamaina reduced

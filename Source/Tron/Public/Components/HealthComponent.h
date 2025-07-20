@@ -27,7 +27,13 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Healt")
 	float CurrentHealth;
-
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stamina")
+	float MaxStamina;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stamina")
+	float CurrentStamina;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Armor")
 	/** Should be a percentage between 0.0 and 1.0 */
 	float MaxArmor = 1.0f;
@@ -54,7 +60,7 @@ public:
 	void TakeDamage(float Amount);
 	
 	UFUNCTION(BlueprintCallable)
-	void InitializeStats(float defaultArmor, float mArmor, float mHealth);
+	void InitializeStats(float defaultArmor, float mArmor, float mHealth, float mStamina);
 	
 	UFUNCTION(BlueprintCallable)
 	float Heal(float Amount);

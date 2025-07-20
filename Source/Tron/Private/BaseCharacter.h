@@ -28,19 +28,19 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Input Actions
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void MoveAction(const FInputActionValue& value);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void LookAction(const FInputActionValue& value);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void JumpAction();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void ThrowDisk();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void Dash();
 
 	UFUNCTION()
@@ -49,10 +49,17 @@ public:
 	UFUNCTION()
 	void StopSprint();
 	
-	
-	UFUNCTION()
+	//Combat
+	UFUNCTION(BlueprintCallable)
 	void MeleeAttack();
 
+	UFUNCTION(BlueprintCallable)
+	void Block();
+
+	UFUNCTION(BlueprintCallable)
+	void Parry();
+
+	void StopBlock();
 	// Dashing
 	UFUNCTION(BlueprintCallable)
 	bool IsDashing() const { return bIsDashing; }
@@ -60,11 +67,11 @@ public:
 	void StartDashing();
 	void StopDashing();
 
-	// Damagable Interface
-	virtual float GetCurrentHealth() override;
-	virtual float GetMaxHealth() override;
-	virtual float Heal(float Amount) override;
-	virtual bool ReciveDamage(FDamageInfo DamageInfo);
+	// Damagable Interface Implementation
+	float GetCurrentHealth_Implementation();
+	float GetMaxHealth_Implementation();
+	float Heal_Implementation(float Amount);
+	bool ReciveDamage_Implementation(FDamageInfo DamageInfo);
 
 protected:
 	// BeginPlay
@@ -107,6 +114,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
 	UInputAction* IA_MeleeAttack;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+	UInputAction* IA_Block_and_Parry;
+
 private:
 	// Components
 	UPROPERTY(EditAnywhere, Category = "Components")
@@ -129,20 +139,23 @@ private:
 	float SprintSpeed = 650.f;
 
 	// Temporary armor boost for dash
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Character Stat")
 	float BaseArmor = 0.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Character Stat")
 	float MaxArmor = 1.0f;
 
-	UPROPERTY(EditDefaultsOnly)
-	float MaxHealth = 100.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Character Stat")
+	float MaxHealth = 1000.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Character Stat")
+	float MaxStamina = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Character Stat")
 	float DashArmor = 0.50f;
 
-	UPROPERTY(EditDefaultsOnly)
-	float MeleeAttackRange = 100.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Character Stat")
+	float MeleeAttackRange = 200.0f;
 
 	// Timer handle
 	FTimerHandle DashTimerHandle;

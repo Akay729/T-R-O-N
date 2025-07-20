@@ -231,12 +231,24 @@ void ADisk::DoMeleeAttack(FVector StartPosition, FVector EndPosition)
 	FHitResult HitResult;
 
 	MeleeDamageInfo.Amount = MeleeDamage;
+	MeleeDamageInfo.CanBeBlocked = true;
 
 	//Creare una sweep trace del disco
 	bool isHit = GetWorld()->SweepSingleByChannel(
 		HitResult, StartPosition, EndPosition, FQuat::Identity, ECC_DiskTrace, SphereShape, Params
 	);
-	DrawDebugSphere(GetWorld(), StartPosition, MeleeAttackSphereRad, 16, FColor::Red, false, 2.f);
+	
+	DrawDebugCapsule(
+		GetWorld(),
+		(StartPosition + EndPosition) * 0.5f,
+		SphereShape.GetSphereRadius(),       // half height
+		SphereShape.GetSphereRadius(),       // radius
+		FQuat::Identity,
+		FColor::Red,
+		false,     // persistent
+		1.0f       // lifetime
+	);
+
 	//Applicare danno al target attraverso il suo component (se ne ha uno)
 	if(isHit)
 	{	
@@ -244,8 +256,9 @@ void ADisk::DoMeleeAttack(FVector StartPosition, FVector EndPosition)
 		AActor* HitActor = HitResult.GetActor();
 		if(HitActor && HitActor->GetClass()->ImplementsInterface(UDamagable::StaticClass()))
 		{
-			ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(HitActor);
-			HitCharacter->ReciveDamage(MeleeDamageInfo);
+			//ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(HitActor);
+			//HitCharacter->ReciveDamage(MeleeDamageInfo);
+			IDamagable::Execute_ReciveDamage(HitActor, MeleeDamageInfo);
 
 			UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *HitActor->GetName());
 			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, MeleeAttackSphereRad, 16, FColor::Green, false, 2.f);

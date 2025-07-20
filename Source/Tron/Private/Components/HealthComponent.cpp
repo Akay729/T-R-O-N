@@ -51,11 +51,12 @@ bool UHealthComponent::IsDead()
 	return CurrentHealth <= 0;
 }
 
-void UHealthComponent::InitializeStats(float baseArmor, float maxArmor, float maxHealth)
+void UHealthComponent::InitializeStats(float baseArmor, float maxArmor, float maxHealth, float maxStamina)
 {
 	BaseArmor =  FMath::Clamp(baseArmor, 0.f, 1.f);
 	MaxArmor  = FMath::Clamp(maxArmor, 0.f, 1.f);
 	MaxHealth = maxHealth;
+	MaxStamina = maxStamina;
 }
 
 // Armor

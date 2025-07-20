@@ -36,7 +36,7 @@ void ABaseCharacter::BeginPlay()
 
 	if (HealthComponent)
 	{
-		HealthComponent->InitializeStats(BaseArmor, MaxArmor, MaxHealth);
+		HealthComponent->InitializeStats(BaseArmor, MaxArmor, MaxHealth, MaxStamina);
 		UE_LOG(LogTemp, Warning, TEXT("HP: %f"), HealthComponent->GetHealthPercent()*100.f);
 	}
 	
@@ -91,6 +91,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 			Input->BindAction(IA_Dash, ETriggerEvent::Started, this, &ABaseCharacter::Dash);
 			Input->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &ABaseCharacter::StartSprint);
 			Input->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &ABaseCharacter::StopSprint);
+			Input->BindAction(IA_Block_and_Parry, ETriggerEvent::Triggered, this, &ABaseCharacter::Block);
+			Input->BindAction(IA_Block_and_Parry, ETriggerEvent::Completed, this, &ABaseCharacter::StopBlock);
 		}
 	}
 
@@ -119,11 +121,33 @@ void ABaseCharacter::JumpAction()
 	Jump();
 }
 
+////////// ----------- COMBAT -----------//////////
 void ABaseCharacter::MeleeAttack()
 {	
 	FVector Start = GetActorLocation();
 	FVector End = Start + GetActorForwardVector() *  MeleeAttackRange;
 	CharacterDisk->DoMeleeAttack(Start, End);
+}
+
+void ABaseCharacter::Block()
+{
+	CombatComponent->SetIsBlocking(true);
+}
+
+void ABaseCharacter::StopBlock()
+{
+	CombatComponent->SetIsBlocking(false);
+	UE_LOG(LogTemp, Warning, TEXT("StopBlock() called"));
+}
+
+void ABaseCharacter::Parry()
+{
+
+}
+
+void ABaseCharacter::ThrowDisk()
+{
+	if (CharacterDisk) CharacterDisk->Throw();
 }
 
 ////////// ----------- DASH METHOD -----------//////////
@@ -166,23 +190,19 @@ void ABaseCharacter::StopSprint()
 }
 
 ////////// ----------- COMBAT SYSTEM METHOD -----------//////////
-void ABaseCharacter::ThrowDisk()
-{
-	if (CharacterDisk) CharacterDisk->Throw();
-}
-float ABaseCharacter::GetCurrentHealth()
+float ABaseCharacter::GetCurrentHealth_Implementation()
 {
 	return HealthComponent->GetCurrentHealth();
 }
-float ABaseCharacter::GetMaxHealth()
+float ABaseCharacter::GetMaxHealth_Implementation()
 {
 	return HealthComponent->GetMaxHealth();
 } 
-float ABaseCharacter::Heal(float Amount)
+float ABaseCharacter::Heal_Implementation(float Amount)
 {
 	return HealthComponent->Heal(Amount);
 } 
-bool ABaseCharacter::ReciveDamage(FDamageInfo DamageInfo)
+bool ABaseCharacter::ReciveDamage_Implementation(FDamageInfo DamageInfo)
 {
 	bool WasDamage;
 	CombatComponent->ReciveDamage(DamageInfo, WasDamage);

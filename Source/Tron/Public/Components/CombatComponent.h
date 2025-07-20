@@ -56,11 +56,11 @@ private:
 	AActor* CompOwner;
 	
 	UPROPERTY()
-	bool bIsBlocking;
+	bool bIsBlocking {false};
 	UPROPERTY()
-	bool bIsInvincible;
+	bool bIsInvincible {false};
 	UPROPERTY()
-	bool bIsParring;
+	bool bIsParring {false};
 	UPROPERTY()
-	bool bIsInterruptible;
+	bool bIsInterruptible {true};
 };

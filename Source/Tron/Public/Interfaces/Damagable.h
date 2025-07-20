@@ -23,10 +23,16 @@ class TRON_API IDamagable
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual float GetCurrentHealth() = 0;
-	virtual float GetMaxHealth() = 0;
-	virtual float Heal(float Amount) = 0;
-	UFUNCTION()
-	virtual bool ReciveDamage(FDamageInfo DamageInfo) = 0; //applay dmg and Return if was damage
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
+	float GetCurrentHealth();
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
+	float GetMaxHealth();
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
+	float Heal(float Amount);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
+	bool ReciveDamage(FDamageInfo DamageInfo); //applay dmg and Return if was damage
 	
 };
