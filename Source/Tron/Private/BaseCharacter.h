@@ -54,12 +54,17 @@ public:
 	void MeleeAttack();
 
 	UFUNCTION(BlueprintCallable)
-	void Block();
+	void StartBlock();
+	
+	UFUNCTION(BlueprintCallable)
+	void StopBlock();
 
 	UFUNCTION(BlueprintCallable)
-	void Parry();
-
-	void StopBlock();
+	void StartParryWindow();
+	
+	UFUNCTION()
+	void EndParryWindow();
+	
 	// Dashing
 	UFUNCTION(BlueprintCallable)
 	bool IsDashing() const { return bIsDashing; }
@@ -138,7 +143,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float SprintSpeed = 650.f;
 
-	// Temporary armor boost for dash
+	////////// ----------- Charachert Stats -----------//////////
 	UPROPERTY(EditDefaultsOnly, Category = "Character Stat")
 	float BaseArmor = 0.0f;
 
@@ -157,6 +162,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Character Stat")
 	float MeleeAttackRange = 200.0f;
 
-	// Timer handle
+	UPROPERTY(EditDefaultsOnly, Category="Character Stat")
+	float ParryWindowTime = 0.5f;
+
+	bool bIsBlocking = false;
+	bool bIsParrying = false;
+	
+	////////// ----------- Timer handles -----------//////////
+	
+	// Dash
 	FTimerHandle DashTimerHandle;
+	// Parry
+	FTimerHandle ParryTimerHandle;
 };

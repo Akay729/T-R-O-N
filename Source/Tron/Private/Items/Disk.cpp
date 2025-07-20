@@ -230,8 +230,10 @@ void ADisk::DoMeleeAttack(FVector StartPosition, FVector EndPosition)
 	FCollisionShape SphereShape = FCollisionShape::MakeSphere(MeleeAttackSphereRad);
 	FHitResult HitResult;
 
+	//TEST ONLY
 	MeleeDamageInfo.Amount = MeleeDamage;
 	MeleeDamageInfo.CanBeBlocked = true;
+	MeleeDamageInfo.CanBeParried = true;
 
 	//Creare una sweep trace del disco
 	bool isHit = GetWorld()->SweepSingleByChannel(

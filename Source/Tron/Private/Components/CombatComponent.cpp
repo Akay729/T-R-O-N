@@ -51,6 +51,7 @@ void UCombatComponent::ReciveDamage(FDamageInfo DamageInfo, bool &bWasDamage)
 	//Parry
 	if (DamageInfo.CanBeParried && bIsParring)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Parried"));
 		return;
 	}
 

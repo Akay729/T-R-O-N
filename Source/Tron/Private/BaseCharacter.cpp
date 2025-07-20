@@ -91,7 +91,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 			Input->BindAction(IA_Dash, ETriggerEvent::Started, this, &ABaseCharacter::Dash);
 			Input->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &ABaseCharacter::StartSprint);
 			Input->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &ABaseCharacter::StopSprint);
-			Input->BindAction(IA_Block_and_Parry, ETriggerEvent::Triggered, this, &ABaseCharacter::Block);
+			Input->BindAction(IA_Block_and_Parry, ETriggerEvent::Started, this, &ABaseCharacter::StartParryWindow);
+			Input->BindAction(IA_Block_and_Parry, ETriggerEvent::Triggered, this, &ABaseCharacter::StartBlock);
 			Input->BindAction(IA_Block_and_Parry, ETriggerEvent::Completed, this, &ABaseCharacter::StopBlock);
 		}
 	}
@@ -129,20 +130,34 @@ void ABaseCharacter::MeleeAttack()
 	CharacterDisk->DoMeleeAttack(Start, End);
 }
 
-void ABaseCharacter::Block()
+void ABaseCharacter::StartBlock()
 {
-	CombatComponent->SetIsBlocking(true);
+	bIsBlocking = true;
+	CombatComponent->SetIsBlocking(bIsBlocking);
 }
 
 void ABaseCharacter::StopBlock()
 {
 	CombatComponent->SetIsBlocking(false);
-	UE_LOG(LogTemp, Warning, TEXT("StopBlock() called"));
 }
 
-void ABaseCharacter::Parry()
+void ABaseCharacter::StartParryWindow()
 {
+	bIsParrying = true;
+	GetWorld()->GetTimerManager().SetTimer(
+		ParryTimerHandle, 
+		this, 
+		&ABaseCharacter::EndParryWindow, 
+		ParryWindowTime, 
+		false
+	);
+	CombatComponent->SetIsParring(bIsParrying);
+}
 
+void ABaseCharacter::EndParryWindow()
+{
+	bIsParrying = false;
+	CombatComponent->SetIsParring(bIsParrying);
 }
 
 void ABaseCharacter::ThrowDisk()
