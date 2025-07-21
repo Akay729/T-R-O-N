@@ -10,7 +10,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBlocked, bool, WasParryable);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDamageResponse, DmgResponses, Response);
 
-class UHealthComponent;
+class UAttributeComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UCombatComponent : public UActorComponent
@@ -50,7 +50,7 @@ public:
 private:
 	
 	UPROPERTY()
-	UHealthComponent* HealthComp;
+	UAttributeComponent* AttributeComp;
 	
 	UPROPERTY()
 	AActor* CompOwner;

@@ -6,7 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "BaseCharacter.h"
-#include "Components/HealthComponent.h"
+#include "Components/AttributeComponent.h"
 #include "TimerManager.h"
 #include "DataTypes/DamageTypes.h"
 #include "Interfaces/Damagable.h"
@@ -87,9 +87,10 @@ void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& Im
 void ADisk::ApplayDamage(AActor* TargetActor, float Amount)
 {
 	//Va reworkato con una iterface il prima possibile.
-	UHealthComponent* HealtComp = TargetActor->FindComponentByClass<UHealthComponent>();
+	UAttributeComponent* HealtComp = TargetActor->FindComponentByClass<UAttributeComponent>();
 	if(HealtComp)
 	{
+
 		HealtComp->TakeDamage(Amount);
 		UE_LOG(LogTemp, Warning, TEXT(" Actor: %s Danno subito: %f Da Actor:"), *TargetActor->GetName(), Amount, *GetOwner()->GetName());
 	}
@@ -255,11 +256,10 @@ void ADisk::DoMeleeAttack(FVector StartPosition, FVector EndPosition)
 	if(isHit)
 	{	
 		//Controllare l'hit ottenuto
+		// Rework Need
 		AActor* HitActor = HitResult.GetActor();
 		if(HitActor && HitActor->GetClass()->ImplementsInterface(UDamagable::StaticClass()))
 		{
-			//ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(HitActor);
-			//HitCharacter->ReciveDamage(MeleeDamageInfo);
 			IDamagable::Execute_ReciveDamage(HitActor, MeleeDamageInfo);
 
 			UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *HitActor->GetName());
@@ -280,6 +280,7 @@ AController* ADisk::GetOwnerController()
 
 //TODO 
 /*
-DiskStatedeve essere in comunicazione con ability component sarà neccesario fare una struc a parte per quello.
+- DiskStatedeve essere in comunicazione con ability component sarà neccesario fare una struc a parte per quello.
+- Rework con componet (organizzar il tutto con una struttura modulare basata su component)
 
 */

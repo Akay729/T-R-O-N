@@ -10,7 +10,7 @@
 class UInputMappingContext;
 class UInputAction;
 class ADisk;
-class UHealthComponent;
+class UAttributeComponent;
 class UCombatComponent;
 struct FInputActionValue;
 
@@ -86,9 +86,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	bool bIsDashing;
 
-	// Health Component
+	// Attribute Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UHealthComponent* HealthComponent;
+	UAttributeComponent* AttributeComponent;
 	
 	// Combat Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")

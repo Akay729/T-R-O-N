@@ -11,7 +11,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
-#include "Components/HealthComponent.h"
+#include "Components/AttributeComponent.h"
 #include "Components/CombatComponent.h"
 
 // Sets default values
@@ -20,7 +20,7 @@ ABaseCharacter::ABaseCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	AttributeComponent = CreateDefaultSubobject<UAttributeComponent>(TEXT("Health Component"));
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("Combat Component"));
 
 	//NOT USED YET
@@ -34,10 +34,10 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HealthComponent)
+	if (AttributeComponent)
 	{
-		HealthComponent->InitializeStats(BaseArmor, MaxArmor, MaxHealth, MaxStamina);
-		UE_LOG(LogTemp, Warning, TEXT("HP: %f"), HealthComponent->GetHealthPercent()*100.f);
+		AttributeComponent->InitializeStats(BaseArmor, MaxArmor, MaxHealth, MaxStamina);
+		UE_LOG(LogTemp, Warning, TEXT("HP: %f"), AttributeComponent->GetHealthPercent()*100.f);
 	}
 	
 	//Disk Creation
@@ -64,8 +64,6 @@ void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-/* 	FVector ForwardDir = GetActorForwardVector();
-	FVector start = GetActorLocation(); */
 }
 
 // Called to bind functionality to input 
@@ -180,17 +178,17 @@ void ABaseCharacter::Dash()
 void ABaseCharacter::StartDashing()
 {
 	bIsDashing = true;
-	HealthComponent->ModifyCurrentArmor(DashArmor);
+	AttributeComponent->ModifyCurrentArmor(DashArmor);
 
-	float CurrentArmor = HealthComponent->GetCurrentArmor();
+	float CurrentArmor = AttributeComponent->GetCurrentArmor();
 	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
 }
 void ABaseCharacter::StopDashing()
 {
 	bIsDashing = false;
-	HealthComponent->ModifyCurrentArmor(-DashArmor);
+	AttributeComponent->ModifyCurrentArmor(-DashArmor);
 
-	float CurrentArmor = HealthComponent->GetCurrentArmor();
+	float CurrentArmor = AttributeComponent->GetCurrentArmor();
 	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
 }
 
@@ -207,15 +205,15 @@ void ABaseCharacter::StopSprint()
 ////////// ----------- COMBAT SYSTEM METHOD -----------//////////
 float ABaseCharacter::GetCurrentHealth_Implementation()
 {
-	return HealthComponent->GetCurrentHealth();
+	return AttributeComponent->GetCurrentHealth();
 }
 float ABaseCharacter::GetMaxHealth_Implementation()
 {
-	return HealthComponent->GetMaxHealth();
+	return AttributeComponent->GetMaxHealth();
 } 
 float ABaseCharacter::Heal_Implementation(float Amount)
 {
-	return HealthComponent->Heal(Amount);
+	return AttributeComponent->Heal(Amount);
 } 
 bool ABaseCharacter::ReciveDamage_Implementation(FDamageInfo DamageInfo)
 {

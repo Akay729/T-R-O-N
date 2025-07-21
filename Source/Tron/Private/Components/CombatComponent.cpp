@@ -3,7 +3,7 @@
 
 #include "Components/CombatComponent.h"
 #include "DataTypes/DamageTypes.h"
-#include "Components/HealthComponent.h"
+#include "Components/AttributeComponent.h"
 
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
@@ -11,8 +11,6 @@ UCombatComponent::UCombatComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 
@@ -23,7 +21,7 @@ void UCombatComponent::BeginPlay()
 	CompOwner = GetOwner();
 	if(CompOwner)
 	{
-		HealthComp = CompOwner->FindComponentByClass<UHealthComponent>();
+		AttributeComp = CompOwner->FindComponentByClass<UAttributeComponent>();
 	}
 	else
 	{
@@ -43,7 +41,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UCombatComponent::ReciveDamage(FDamageInfo DamageInfo, bool &bWasDamage)
 {
 	bWasDamage = false;
-	if (!CompOwner || HealthComp->IsDead()) return;
+	if (!CompOwner || AttributeComp->IsDead()) return;
 
 	//Invicible
 	if (bIsInvincible && !DamageInfo.ShouldDamageInvincible) return;
@@ -74,7 +72,7 @@ void UCombatComponent::ReciveDamage(FDamageInfo DamageInfo, bool &bWasDamage)
 		//Interrompi Azione
 	}
 
-	HealthComp->TakeDamage(DamageInfo.Amount);
+	AttributeComp->TakeDamage(DamageInfo.Amount);
 	bWasDamage = true;
 }
 
