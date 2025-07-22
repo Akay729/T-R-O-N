@@ -136,7 +136,8 @@ void ABaseCharacter::StartBlock()
 
 void ABaseCharacter::StopBlock()
 {
-	CombatComponent->SetIsBlocking(false);
+	bIsBlocking = false;
+	CombatComponent->SetIsBlocking(bIsBlocking);
 }
 
 void ABaseCharacter::StartParryWindow()
@@ -170,6 +171,7 @@ void ABaseCharacter::Dash()
 	{
 		StartDashing();
 		const FVector Direction = GetCharacterMovement()->GetLastInputVector();
+		CombatComponent->SetIsInvincible(true);
 		LaunchCharacter(Direction * DashDistance, true, true);
 		
 		GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABaseCharacter::StopDashing, 0.5f);
@@ -181,7 +183,9 @@ void ABaseCharacter::StartDashing()
 	AttributeComponent->ModifyCurrentArmor(DashArmor);
 
 	float CurrentArmor = AttributeComponent->GetCurrentArmor();
+	CombatComponent->SetIsInvincible(false);
 	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
+
 }
 void ABaseCharacter::StopDashing()
 {

@@ -25,7 +25,7 @@ void UCombatComponent::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Miss Health Component"));
+		UE_LOG(LogTemp, Error, TEXT("Miss Attribute Component"));
 	}
 	
 }
@@ -56,13 +56,23 @@ void UCombatComponent::ReciveDamage(FDamageInfo DamageInfo, bool &bWasDamage)
 	//Block
 	if (DamageInfo.CanBeBlocked && bIsBlocking)
 	{
-		OnBlocked.Broadcast(DamageInfo.CanBeParried);
-		UE_LOG(LogTemp, Warning, TEXT("Blocked"));
+		AttributeComp->StopRegenStamina();
 		//Event dipsacer
-		//Check stamina
-		//if is enough block no damage taken and stamaina reduced
-		//Else deplate stamina and take damage 
-		return;
+		OnBlocked.Broadcast(DamageInfo.CanBeParried);
+		//TEST
+		bool isDraining = AttributeComp->DrainStamina(20);
+		if (isDraining)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Blocked"));
+			GetWorld()->GetTimerManager().SetTimer(
+				StartStaminaRegen,
+				AttributeComp,
+				&UAttributeComponent::StartRegenStamina,
+				3.0f,
+				false
+			);
+			return;
+		}
 	}
 
 	//Interrupt

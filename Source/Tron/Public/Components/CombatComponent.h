@@ -49,6 +49,8 @@ public:
 	
 private:
 	
+	FTimerHandle StartStaminaRegen;
+
 	UPROPERTY()
 	UAttributeComponent* AttributeComp;
 	
@@ -57,10 +59,13 @@ private:
 	
 	UPROPERTY()
 	bool bIsBlocking {false};
+	
 	UPROPERTY()
 	bool bIsInvincible {false};
+	
 	UPROPERTY()
 	bool bIsParring {false};
+	
 	UPROPERTY()
 	bool bIsInterruptible {true};
 };

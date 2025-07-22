@@ -104,6 +104,9 @@ public:
 	void StopRegenStamina();
 
 	UFUNCTION(BlueprintCallable)
+	bool DrainStamina(float value);
+	
+	UFUNCTION(BlueprintCallable)
 	float GetMaxStamina() const;
 
 	UFUNCTION(BlueprintCallable)
@@ -111,6 +114,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetStaminaPercent() const;
+
 
 private:
 	FTimerHandle StaminaTimerHandle;

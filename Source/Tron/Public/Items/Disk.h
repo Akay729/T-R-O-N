@@ -37,7 +37,7 @@ protected:
 	UFUNCTION()
 	void OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 
-	void ApplayDamage(AActor* TargetActor, float Amount);
+	void ApplayDamage(AActor* TargetActor, FDamageInfo DamageInfo);
 
 public:	
 	// Called every frame
@@ -58,8 +58,14 @@ public:
 	float MeleeDamage = 50;
 	
 	UPROPERTY(EditDefaultsOnly)
+	float ThrowDamage = 100;
+	
+	UPROPERTY(EditDefaultsOnly)
 	FDamageInfo MeleeDamageInfo;
 
+	UPROPERTY(EditDefaultsOnly)
+	FDamageInfo ThrowDamageInfo;
+	
 	UPROPERTY()
 	EDiskState CurrentState = EDiskState::None;
 
@@ -92,8 +98,6 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	int32 BounceCount = 0;
-
-	void DiskSweep(); //TODO
 	
 	FCollisionQueryParams Params;
 

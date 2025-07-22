@@ -44,6 +44,15 @@ void ADisk::BeginPlay()
 	//Trace Params
 	Params.AddIgnoredActor(DiskOwner);
 	Params.AddIgnoredActor(this);
+
+	//TEST ONLY
+	MeleeDamageInfo.Amount = MeleeDamage;
+	MeleeDamageInfo.CanBeBlocked = true;
+	MeleeDamageInfo.CanBeParried = true;
+
+	ThrowDamageInfo.Amount = ThrowDamage;
+	ThrowDamageInfo.CanBeBlocked = true;
+	ThrowDamageInfo.CanBeParried = false;
 }
 
 // Called every frame
@@ -68,12 +77,12 @@ void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& Im
     BounceCount++;
 	
 	AActor* HitActor = ImpactResult.GetActor();
-	if (HitActor && this != HitActor && GetOwner() != HitActor)
+	if (HitActor && this != HitActor && DiskOwner != HitActor)
 	{
 		if(HitActor->IsA(ABaseCharacter::StaticClass()))
 		{
 			GoBackToOwner();
-			ApplayDamage(HitActor, 25.0f);
+			ApplayDamage(HitActor, ThrowDamageInfo);
 		}
 		UE_LOG(LogTemp, Warning, TEXT("Target Valido"));
 	}
@@ -84,16 +93,15 @@ void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& Im
 	}
 }
 
-void ADisk::ApplayDamage(AActor* TargetActor, float Amount)
+void ADisk::ApplayDamage(AActor* TargetActor, FDamageInfo DamageInfo)
 {
 	//Va reworkato con una iterface il prima possibile.
-	UAttributeComponent* HealtComp = TargetActor->FindComponentByClass<UAttributeComponent>();
-	if(HealtComp)
-	{
-
-		HealtComp->TakeDamage(Amount);
-		UE_LOG(LogTemp, Warning, TEXT(" Actor: %s Danno subito: %f Da Actor:"), *TargetActor->GetName(), Amount, *GetOwner()->GetName());
-	}
+	if(TargetActor && TargetActor->GetClass()->ImplementsInterface(UDamagable::StaticClass()))
+		{
+			IDamagable::Execute_ReciveDamage(TargetActor, MeleeDamageInfo);
+			UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *TargetActor->GetName());
+			//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, MeleeAttackSphereRad, 16, FColor::Green, false, 2.f);
+		}
 }
 
 void ADisk::Throw()
@@ -154,12 +162,6 @@ void ADisk::DiskSweepTraceForTaget(FVector ViewpointLocation, FRotator Viewpoint
 			UE_LOG(LogTemp, Warning, TEXT("Colpito qualcosa, ma nessun attore valido"));
 		}
 	}
-}
-
-void ADisk::DiskSweep()
-{
-	//TODO
-	//Crea uno sweep costante nella direzione del discoper garantire l'hit
 }
 
 void ADisk::GoBackToOwner()
@@ -231,11 +233,6 @@ void ADisk::DoMeleeAttack(FVector StartPosition, FVector EndPosition)
 	FCollisionShape SphereShape = FCollisionShape::MakeSphere(MeleeAttackSphereRad);
 	FHitResult HitResult;
 
-	//TEST ONLY
-	MeleeDamageInfo.Amount = MeleeDamage;
-	MeleeDamageInfo.CanBeBlocked = true;
-	MeleeDamageInfo.CanBeParried = true;
-
 	//Creare una sweep trace del disco
 	bool isHit = GetWorld()->SweepSingleByChannel(
 		HitResult, StartPosition, EndPosition, FQuat::Identity, ECC_DiskTrace, SphereShape, Params
@@ -252,19 +249,10 @@ void ADisk::DoMeleeAttack(FVector StartPosition, FVector EndPosition)
 		1.0f       // lifetime
 	);
 
-	//Applicare danno al target attraverso il suo component (se ne ha uno)
 	if(isHit)
 	{	
-		//Controllare l'hit ottenuto
-		// Rework Need
 		AActor* HitActor = HitResult.GetActor();
-		if(HitActor && HitActor->GetClass()->ImplementsInterface(UDamagable::StaticClass()))
-		{
-			IDamagable::Execute_ReciveDamage(HitActor, MeleeDamageInfo);
-
-			UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *HitActor->GetName());
-			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, MeleeAttackSphereRad, 16, FColor::Green, false, 2.f);
-		}
+		ApplayDamage(HitActor, MeleeDamageInfo);
 	}
 
 }

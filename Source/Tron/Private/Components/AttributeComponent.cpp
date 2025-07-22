@@ -100,26 +100,37 @@ float UAttributeComponent::GetHealthPercent() const
 }
 
 ////////// ----------- STAMINA -----------//////////
-
 void UAttributeComponent::RegenStamina(float StaminaValue)
 {
+	CurrentStamina = FMath::Clamp(CurrentStamina + StaminaValue, 0.0f, MaxStamina);
+	if (CurrentStamina == MaxStamina) StopRegenStamina();
 	UE_LOG(LogTemp, Warning, TEXT("StaminaRegenAmount: %f"), StaminaValue);
 }
 
 void UAttributeComponent::StartRegenStamina()
 {
-	StaminaDelegate.BindUObject(this, &UAttributeComponent::RegenStamina, StaminaRegen);
-	GetWorld()->GetTimerManager().SetTimer(
-		StaminaTimerHandle,
-		StaminaDelegate,
-		0.1,
-		true
-	);
+	if(CurrentStamina < MaxStamina)
+	{
+		StaminaDelegate.BindUObject(this, &UAttributeComponent::RegenStamina, StaminaRegen);
+		GetWorld()->GetTimerManager().SetTimer(
+			StaminaTimerHandle,
+			StaminaDelegate,
+			0.1,
+			true
+		);
+	}
 }
 
 void UAttributeComponent::StopRegenStamina()
 {
 	GetWorld()->GetTimerManager().ClearTimer(StaminaTimerHandle);
+}
+
+bool UAttributeComponent::DrainStamina(float DrainValue)
+{
+	bool isdraining = !CurrentStamina == 0.0f;
+	CurrentStamina = FMath::Clamp(CurrentStamina - DrainValue, 0.0f, MaxStamina);
+	return isdraining;
 }
 
 float UAttributeComponent::GetMaxStamina() const
