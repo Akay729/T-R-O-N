@@ -70,7 +70,7 @@ float UAttributeComponent::ResetCurrentArmor()
 	CurrentArmor = BaseArmor;
 	return CurrentArmor;
 }
-float UAttributeComponent::GetCurrentArmor()
+float UAttributeComponent::GetCurrentArmor() const
 {
 	return CurrentArmor;
 }

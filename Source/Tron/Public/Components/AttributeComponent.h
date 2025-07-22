@@ -88,7 +88,7 @@ public:
 	float ResetCurrentArmor();
 
 	UFUNCTION(BlueprintCallable)
-	float GetCurrentArmor();
+	float GetCurrentArmor() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsDead();
