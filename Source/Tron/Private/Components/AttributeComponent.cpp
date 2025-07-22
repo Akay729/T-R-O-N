@@ -128,9 +128,9 @@ void UAttributeComponent::StopRegenStamina()
 
 bool UAttributeComponent::DrainStamina(float DrainValue)
 {
-	bool isdraining = !CurrentStamina == 0.0f;
+	bool isdraining = CurrentStamina == 0.0f;
 	CurrentStamina = FMath::Clamp(CurrentStamina - DrainValue, 0.0f, MaxStamina);
-	return isdraining;
+	return !isdraining;
 }
 
 float UAttributeComponent::GetMaxStamina() const

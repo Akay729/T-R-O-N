@@ -171,7 +171,7 @@ void ABaseCharacter::Dash()
 	{
 		StartDashing();
 		const FVector Direction = GetCharacterMovement()->GetLastInputVector();
-		CombatComponent->SetIsInvincible(true);
+		
 		LaunchCharacter(Direction * DashDistance, true, true);
 		
 		GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABaseCharacter::StopDashing, 0.5f);
@@ -183,7 +183,7 @@ void ABaseCharacter::StartDashing()
 	AttributeComponent->ModifyCurrentArmor(DashArmor);
 
 	float CurrentArmor = AttributeComponent->GetCurrentArmor();
-	CombatComponent->SetIsInvincible(false);
+	CombatComponent->SetIsInvincible(true);
 	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
 
 }
@@ -191,7 +191,8 @@ void ABaseCharacter::StopDashing()
 {
 	bIsDashing = false;
 	AttributeComponent->ModifyCurrentArmor(-DashArmor);
-
+	
+	CombatComponent->SetIsInvincible(false);
 	float CurrentArmor = AttributeComponent->GetCurrentArmor();
 	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
 }

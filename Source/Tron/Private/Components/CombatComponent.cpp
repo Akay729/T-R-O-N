@@ -44,6 +44,7 @@ void UCombatComponent::ReciveDamage(FDamageInfo DamageInfo, bool &bWasDamage)
 	if (!CompOwner || AttributeComp->IsDead()) return;
 
 	//Invicible
+	UE_LOG(LogTemp, Display, TEXT("Your message %s"), bIsInvincible ? TEXT("true") : TEXT("false"));
 	if (bIsInvincible && !DamageInfo.ShouldDamageInvincible) return;
 	
 	//Parry
@@ -71,8 +72,10 @@ void UCombatComponent::ReciveDamage(FDamageInfo DamageInfo, bool &bWasDamage)
 				3.0f,
 				false
 			);
+		
 			return;
 		}
+		UE_LOG(LogTemp, Warning, TEXT("Not enough stamina"));
 	}
 
 	//Interrupt

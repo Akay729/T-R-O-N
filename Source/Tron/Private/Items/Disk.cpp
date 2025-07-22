@@ -60,11 +60,6 @@ void ADisk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DiskSphereRad, 36, FColor::Green, false, 0.1f);
-	/* if(CurrentState == EDiskState::Returning)
-	{
-		ReattachDiskToSocket();
-		//CurrentState = EDiskState::Attached;
-	} */
 }
 
 int32 ADisk::GetDiskBounce()
@@ -84,7 +79,7 @@ void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& Im
 			GoBackToOwner();
 			ApplayDamage(HitActor, ThrowDamageInfo);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("Target Valido"));
+		//UE_LOG(LogTemp, Warning, TEXT("Target Valido"));
 	}
 	
 	if (BounceCount >= MaxBounces)
@@ -95,7 +90,6 @@ void ADisk::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& Im
 
 void ADisk::ApplayDamage(AActor* TargetActor, FDamageInfo DamageInfo)
 {
-	//Va reworkato con una iterface il prima possibile.
 	if(TargetActor && TargetActor->GetClass()->ImplementsInterface(UDamagable::StaticClass()))
 		{
 			IDamagable::Execute_ReciveDamage(TargetActor, MeleeDamageInfo);
