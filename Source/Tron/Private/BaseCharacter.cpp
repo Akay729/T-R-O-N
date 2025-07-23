@@ -13,6 +13,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Components/CombatComponent.h"
+#include "DataTypes/CharacterStateTypes.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -126,18 +127,31 @@ void ABaseCharacter::MeleeAttack()
 	FVector Start = GetActorLocation();
 	FVector End = Start + GetActorForwardVector() *  MeleeAttackRange;
 	CharacterDisk->DoMeleeAttack(Start, End);
+	
+	CurrentAttackState = EAttackState::Attacking;
+	GetWorldTimerManager().SetTimer(
+		ThrowTimerHandle,
+		this,
+		&ABaseCharacter::SetAttackStateToNone,
+		1.0f,
+		false
+	);
 }
 
 void ABaseCharacter::StartBlock()
 {
 	bIsBlocking = true;
 	CombatComponent->SetIsBlocking(bIsBlocking);
+	
+	CurrentAttackState = EAttackState::Blocking;
 }
 
 void ABaseCharacter::StopBlock()
 {
 	bIsBlocking = false;
 	CombatComponent->SetIsBlocking(bIsBlocking);
+	
+	CurrentAttackState = EAttackState::None;
 }
 
 void ABaseCharacter::StartParryWindow()
@@ -151,17 +165,31 @@ void ABaseCharacter::StartParryWindow()
 		false
 	);
 	CombatComponent->SetIsParring(bIsParrying);
+	
+	CurrentAttackState = EAttackState::Parrying;
 }
 
 void ABaseCharacter::EndParryWindow()
 {
 	bIsParrying = false;
 	CombatComponent->SetIsParring(bIsParrying);
+	
+	CurrentAttackState = EAttackState::None;
 }
 
 void ABaseCharacter::ThrowDisk()
 {
 	if (CharacterDisk) CharacterDisk->Throw();
+
+	//Questo meglio gestirlo dalla classe disk DA RIVEREDE
+	CurrentAttackState = EAttackState::ThrowingDisk;
+	GetWorldTimerManager().SetTimer(
+		ThrowTimerHandle,
+		this,
+		&ABaseCharacter::SetAttackStateToNone,
+		1.0f,
+		false
+	);
 }
 
 ////////// ----------- DASH METHOD -----------//////////
@@ -173,8 +201,7 @@ void ABaseCharacter::Dash()
 		const FVector Direction = GetCharacterMovement()->GetLastInputVector();
 		
 		LaunchCharacter(Direction * DashDistance, true, true);
-		
-		GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABaseCharacter::StopDashing, 0.5f);
+		GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABaseCharacter::StopDashing, 0.4f);
 	}
 }
 void ABaseCharacter::StartDashing()
@@ -184,6 +211,8 @@ void ABaseCharacter::StartDashing()
 
 	float CurrentArmor = AttributeComponent->GetCurrentArmor();
 	CombatComponent->SetIsInvincible(true);
+	
+	CurrentAttackState = EAttackState::Dashing;
 	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
 
 }
@@ -194,6 +223,8 @@ void ABaseCharacter::StopDashing()
 	
 	CombatComponent->SetIsInvincible(false);
 	float CurrentArmor = AttributeComponent->GetCurrentArmor();
+	
+	CurrentAttackState = EAttackState::None;
 	UE_LOG(LogTemp, Warning, TEXT("Armor: %f"), CurrentArmor);
 }
 
@@ -224,5 +255,23 @@ bool ABaseCharacter::ReciveDamage_Implementation(FDamageInfo DamageInfo)
 {
 	bool WasDamage;
 	CombatComponent->ReciveDamage(DamageInfo, WasDamage);
+	if(WasDamage)
+	{
+		//Hitreaction
+	}
 	return WasDamage;
+}
+
+EMovementState ABaseCharacter::GetCurrentMovementState() const
+{
+	return CurrentMovementState;
+}
+EAttackState ABaseCharacter::GetCurrentAttackState() const
+{
+	return CurrentAttackState;
+}
+
+void ABaseCharacter::SetAttackStateToNone()
+{
+	CurrentAttackState = EAttackState::None;
 }

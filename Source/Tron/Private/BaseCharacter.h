@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Interfaces/Damagable.h"
 #include "GameFramework/Character.h"
+#include "DataTypes/CharacterStateTypes.h"
 #include "BaseCharacter.generated.h"
 
 class UInputMappingContext;
@@ -78,6 +79,12 @@ public:
 	float Heal_Implementation(float Amount);
 	bool ReciveDamage_Implementation(FDamageInfo DamageInfo);
 
+	UFUNCTION(BlueprintCallable)
+	EMovementState GetCurrentMovementState() const;
+	
+	UFUNCTION(BlueprintCallable)
+	EAttackState GetCurrentAttackState() const;
+	
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
@@ -123,6 +130,9 @@ protected:
 	UInputAction* IA_Block_and_Parry;
 
 private:
+	void SetAttackStateToNone();
+	EAttackState CurrentAttackState;
+	EMovementState CurrentMovementState;
 	// Components
 	UPROPERTY(EditAnywhere, Category = "Components")
 	USceneComponent* DiskSpawnPoint;
@@ -174,4 +184,6 @@ private:
 	FTimerHandle DashTimerHandle;
 	// Parry
 	FTimerHandle ParryTimerHandle;
+	//Thorw to None state
+	FTimerHandle ThrowTimerHandle;
 };
