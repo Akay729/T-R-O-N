@@ -185,5 +185,5 @@ private:
 	// Parry
 	FTimerHandle ParryTimerHandle;
 	//Thorw to None state
-	FTimerHandle ThrowTimerHandle;
+	FTimerHandle MeleeTimerHandle;
 };

@@ -130,7 +130,7 @@ void ABaseCharacter::MeleeAttack()
 	
 	CurrentAttackState = EAttackState::Attacking;
 	GetWorldTimerManager().SetTimer(
-		ThrowTimerHandle,
+		MeleeTimerHandle,
 		this,
 		&ABaseCharacter::SetAttackStateToNone,
 		1.0f,
@@ -182,14 +182,7 @@ void ABaseCharacter::ThrowDisk()
 	if (CharacterDisk) CharacterDisk->Throw();
 
 	//Questo meglio gestirlo dalla classe disk DA RIVEREDE
-	CurrentAttackState = EAttackState::ThrowingDisk;
-	GetWorldTimerManager().SetTimer(
-		ThrowTimerHandle,
-		this,
-		&ABaseCharacter::SetAttackStateToNone,
-		1.0f,
-		false
-	);
+	//CurrentAttackState = EAttackState::ThrowingDisk;
 }
 
 ////////// ----------- DASH METHOD -----------//////////
@@ -274,4 +267,5 @@ EAttackState ABaseCharacter::GetCurrentAttackState() const
 void ABaseCharacter::SetAttackStateToNone()
 {
 	CurrentAttackState = EAttackState::None;
+	GetWorldTimerManager().ClearTimer(MeleeTimerHandle);
 }
