@@ -135,6 +135,7 @@ void ADisk::Throw()
 	}
 }
 
+//need rework
 void ADisk::DiskSweepTraceForTaget(FVector ViewpointLocation, FRotator ViewpointRotation)
 {
 	FHitResult OutHit;
@@ -149,6 +150,8 @@ void ADisk::DiskSweepTraceForTaget(FVector ViewpointLocation, FRotator Viewpoint
 		AActor* HitActor = OutHit.GetActor();
 		if (HitActor)
 		{
+			//ToDo
+			//Definire il comportamento se l'actor è un player/nemico
 			UE_LOG(LogTemp, Warning, TEXT("Attore colpito: %s"), *HitActor->GetName());
 		}
 		else
@@ -169,7 +172,7 @@ void ADisk::GoBackToOwner()
 		GetWorldTimerManager().SetTimer(
 			DiskTrajectoryTimeHandle,
 			DiskTimerDel,
-			0.075f,
+			0.05f,
 			true
 		);
 		
