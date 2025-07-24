@@ -17,6 +17,7 @@ enum class EDiskState : uint8 {
 };
 
 class ABaseCharacter;
+class UMeleeWeaponComponent;
 
 UCLASS()
 class TRON_API ADisk : public AActor
@@ -76,6 +77,9 @@ public:
 	class UProjectileMovementComponent* DiskMovementComponent;
 
 private:
+
+	UPROPERTY(VisibleAnywhere, Category="TEST")
+	UMeleeWeaponComponent* MeleeWeaponComponent;
 
 	AActor* DiskOwner;
 	AController* OwnerController;

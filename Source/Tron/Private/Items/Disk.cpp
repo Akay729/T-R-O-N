@@ -10,6 +10,7 @@
 #include "TimerManager.h"
 #include "DataTypes/DamageTypes.h"
 #include "Interfaces/Damagable.h"
+#include "Components/MeleeWeaponComponent.h"
 // Sets default values
 #define ECC_DiskTrace ECollisionChannel::ECC_GameTraceChannel1
 
@@ -20,6 +21,8 @@ ADisk::ADisk()
 
 	DiskMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base Mesh"));
 	RootComponent = DiskMeshComponent;
+
+	MeleeWeaponComponent = CreateDefaultSubobject<UMeleeWeaponComponent>(TEXT("Test"));
 
 	DiskMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 	DiskMovementComponent->MaxSpeed = DiskMaxSpeed;
@@ -225,7 +228,8 @@ void ADisk::ReattachDiskToSocket()
 //MELEE
 void ADisk::DoMeleeAttack(FVector StartPosition, FVector EndPosition)
 {
-	if(CurrentState != EDiskState::Attached) return;
+	MeleeWeaponComponent->SweepAttack();
+/* 	if(CurrentState != EDiskState::Attached) return;
 	
 	FCollisionShape SphereShape = FCollisionShape::MakeSphere(MeleeAttackSphereRad);
 	FHitResult HitResult;
@@ -250,7 +254,7 @@ void ADisk::DoMeleeAttack(FVector StartPosition, FVector EndPosition)
 	{	
 		AActor* HitActor = HitResult.GetActor();
 		ApplayDamage(HitActor, MeleeDamageInfo);
-	}
+	} */
 
 }
 
