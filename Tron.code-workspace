@@ -20,7 +20,10 @@
 			"DOTNET_ROLL_FORWARD": "LatestMajor"
 		},
 		"files.associations": {
-			"*.rh": "cpp"
+			"*.rh": "cpp",
+			"string": "cpp",
+			"filesystem": "cpp",
+			"xstring": "cpp"
 		}
 	},
 	"extensions": {

@@ -22,7 +22,13 @@ UMeleeWeaponComponent::UMeleeWeaponComponent()
 void UMeleeWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+    Owner = GetOwner();
+    TopLevelOwner = Owner->GetOwner();
+    OwnerController = GetOwnerController();
+    
+    
+    Params.AddIgnoredActor(Owner);
+    Params.AddIgnoredActor(TopLevelOwner);
 	// ...
 	
 }
@@ -38,7 +44,7 @@ void UMeleeWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UMeleeWeaponComponent::StartAttack()
 {
-
+    Attack();
 }
 void UMeleeWeaponComponent::StopAttack()
 {
@@ -51,71 +57,73 @@ EAttacksState UMeleeWeaponComponent::GetCurrentAttackState()
 
 void UMeleeWeaponComponent::Attack()
 {
-	
+    if (!Owner) return;
+    if (!OwnerController) return;
+    
+    FVector Origin = TopLevelOwner->GetActorLocation();
+    
+    FVector OnwerLocation;
+    FRotator OwnerRotation;
+
+    OwnerController->GetPlayerViewPoint(OnwerLocation, OwnerRotation);
+
+    FVector Forward = OwnerRotation.Vector();
+    
+    TSet<AActor*> AlreadyHit;
+
+	SweepAttack(Origin, Forward, SphereRadius,AlreadyHit);
 }
-void UMeleeWeaponComponent::SweepAttack()
+/**
+ * @brief In questo gioco tutti gli attachi melee sono delgi sweep in arco di una capsula
+ * 
+ * @param Origin il centro per larcata dello sweep.
+ * @param Forward la direzione in cui deve eseguire la arcata.
+ * @param AlreadyHit Set of the actor hit by the sweeps
+ * @return bool se ha colpito
+ */
+bool UMeleeWeaponComponent::SweepAttack( FVector Origin, FVector Forward, float Radius, TSet<AActor*>& ActorsHit)
 {
 	//Sweep per melee weapon
-	// Crea una capsule davanti a se 
-	// Identifica gli attori colpiti
-  AActor* Owner = GetOwner();
-    if (!Owner) return;
-
-    FVector Origin = Owner->GetActorLocation();
-    FVector Forward = Owner->GetActorForwardVector();
+    TArray<FHitResult> Hits;
     
-    float Radius = 30.f;
-    float HalfHeight = 60.f;
-    float SweepDistance = 200.f;
-
-    int NumTraces = 8;
-    float ArcAngle = 90.f; // angolo totale dell’arco (gradi)
-    float StartAngle = -ArcAngle / 2.f;
-
-    TSet<AActor*> AlreadyHit;
+    FVector Start = Origin + FVector(0,0,50); //offset per fare partire il colpo dal centro corpo
+    FVector End = Start + Forward * SweepDistance;
+    FCollisionShape Sphere = FCollisionShape::MakeSphere(Radius);
     
-    // Rotazione per orientare la capsula orizzontalmente
-    FQuat CapsuleRotation = FQuat(FVector::RightVector, FMath::DegreesToRadians(90.f)); // 90° su asse Y
+    bool isHit = GetWorld()->SweepMultiByChannel(
+        Hits,
+        Start,
+        End,
+        FQuat::Identity,
+        ECC_DiskTrace,
+        Sphere,
+        Params
+    );
 
-    for (int i = 0; i < NumTraces; ++i)
+    // Debug: disegna la capsula e la linea di sweep
+    DrawDebugSphere(GetWorld(), End, Radius, 16, FColor::Red, false, 1.0f);
+    DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f);
+
+    if(isHit)
     {
-        float AngleDeg = StartAngle + (ArcAngle / (NumTraces - 1)) * i;
-        FVector Direction = Forward.RotateAngleAxis(AngleDeg, FVector::UpVector);
-
-        FVector Start = Origin + FVector(0, 0, 50.f); // leggero offset verticale
-        FVector End = Start + Direction * SweepDistance;
-
-        TArray<FHitResult> Hits;
-        FCollisionShape Capsule = FCollisionShape::MakeCapsule(Radius, HalfHeight);
-
-        bool bHit = GetWorld()->SweepMultiByChannel(
-            Hits,
-            Start,
-            End,
-            CapsuleRotation,
-            ECC_Pawn,
-            Capsule,
-            FCollisionQueryParams(FName(), false, Owner)
-        );
-
-        // Debug: disegna la capsula e la linea di sweep
-        DrawDebugCapsule(GetWorld(), End, HalfHeight, Radius, CapsuleRotation, FColor::Cyan, false, 1.0f);
-        DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1.0f);
-
-        if (bHit)
+        for (const FHitResult& Hit : Hits)
         {
-            for (const FHitResult& Hit : Hits)
+            AActor* HittedActor = Hit.GetActor();
+            if (HittedActor && !ActorsHit.Contains(HittedActor))
             {
-                AActor* HitActor = Hit.GetActor();
-                if (HitActor && !AlreadyHit.Contains(HitActor))
-                {
-                    AlreadyHit.Add(HitActor);
-                    UE_LOG(LogTemp, Warning, TEXT("Colpito: %s"), *HitActor->GetName());
-
-                    // Qui puoi applicare danno o effetti al bersaglio
-                }
+                ActorsHit.Add(HittedActor);
+                UE_LOG(LogTemp, Warning, TEXT("Colpito: %s"), *HittedActor->GetName());
+                
+                //Fare Danno
             }
         }
     }
+    return isHit;
 }
 
+AController* UMeleeWeaponComponent::GetOwnerController()
+{
+	APawn* OwnerPawn = Cast<APawn>(Owner->GetOwner());
+	if(OwnerPawn) return OwnerPawn->GetController();
+	return nullptr;
+}

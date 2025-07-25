@@ -228,7 +228,7 @@ void ADisk::ReattachDiskToSocket()
 //MELEE
 void ADisk::DoMeleeAttack(FVector StartPosition, FVector EndPosition)
 {
-	MeleeWeaponComponent->SweepAttack();
+	MeleeWeaponComponent->StartAttack();
 /* 	if(CurrentState != EDiskState::Attached) return;
 	
 	FCollisionShape SphereShape = FCollisionShape::MakeSphere(MeleeAttackSphereRad);

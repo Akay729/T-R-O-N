@@ -28,10 +28,21 @@ public:
 	virtual void StopAttack() override;
 	virtual EAttacksState GetCurrentAttackState() override;
 	void StartAttack();
-	void SweepAttack();
+	bool SweepAttack(FVector Origin, FVector Forward, float Radius, TSet<AActor*>& AlreadyHit);
+	AController* GetOwnerController();
 
 
 private:
 	UPROPERTY()
 	FTimerHandle MeleeTimerHandle;
+
+	AActor* Owner;
+	AActor* TopLevelOwner;
+	AController* OwnerController;
+
+	float SphereRadius = 50.0f;
+	float SweepDistance = 125.0f;
+	//int NumTraces = 8;
+	//float ArcAngle = 90.0f;
+	FCollisionQueryParams Params;
 };
