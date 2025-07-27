@@ -2,6 +2,8 @@
 
 
 #include "Components/DiskBehaviourComponent.h"
+#include "Components/MeleeWeaponComponent.h"
+#include "Components/RangedWeaponComponent.h"
 
 // Sets default values for this component's properties
 UDiskBehaviourComponent::UDiskBehaviourComponent()
@@ -30,5 +32,22 @@ void UDiskBehaviourComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UDiskBehaviourComponent::PerformMeleeAttack()
+{
+	
+}
+void UDiskBehaviourComponent::PerformRangedAttack()
+{
+
+}
+void UDiskBehaviourComponent::PerformRecallDisk()
+{
+
+}
+void UDiskBehaviourComponent::PerformBlock()
+{
+
 }
 
