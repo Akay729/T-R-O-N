@@ -2,3 +2,10 @@
 
 
 #include "TronGameMode.h"
+
+#include "Tron/Player/TronPlayerController.h"
+
+ATronGameMode::ATronGameMode()
+{
+	PlayerControllerClass = ATronPlayerController::StaticClass();
+}

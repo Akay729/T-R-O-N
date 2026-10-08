@@ -6,23 +6,40 @@
 #include "GameFramework/Character.h"
 #include "TronPlayerCharacter.generated.h"
 
+struct FInputActionValue;
+class UInputAction;
+class UInputMappingContext;
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class TRON_API ATronPlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this character's properties
-	ATronPlayerCharacter();
-
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	//Components
+	
+	UPROPERTY(VisibleAnywhere, Category=Components)
+	TObjectPtr<UCameraComponent> CameraComponent;
+	
+	UPROPERTY(VisibleAnywhere, Category=Components)
+	TObjectPtr<USpringArmComponent> SpringArmComponent;
 
+	//IA and IMC
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
+	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	
+	TObjectPtr<UInputAction> IA_Move;
+	TObjectPtr<UInputAction> IA_Look;
+	
+	
+	//Functions
+	void MoveAction(const FInputActionValue& Value);
+	void LookAction(const FInputActionValue& Value);
+	
+	
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	ATronPlayerCharacter();
 };

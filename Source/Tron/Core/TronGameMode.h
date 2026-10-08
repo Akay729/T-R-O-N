@@ -13,4 +13,8 @@ UCLASS()
 class TRON_API ATronGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	ATronGameMode();
+	
 };
