@@ -7,6 +7,7 @@
 #include "DataTypes/DamageTypes.h"
 #include "Disk.generated.h"
 
+//@todo must be reworked and removed
 UENUM(BlueprintType)
 enum class EDiskState : uint8 {
 	None	UMETA(DisplayName = "None"),

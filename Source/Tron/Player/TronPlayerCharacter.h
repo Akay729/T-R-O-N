@@ -18,8 +18,8 @@ class TRON_API ATronPlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-	//Components
 	
+	//Components
 	UPROPERTY(VisibleAnywhere, Category=Components)
 	TObjectPtr<UCameraComponent> CameraComponent;
 	

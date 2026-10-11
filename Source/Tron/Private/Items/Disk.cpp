@@ -114,6 +114,7 @@ void ADisk::Throw()
 		DiskSweepTraceForTaget(ViewpointLocation, ViewpointRotation);
 		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		
+		//@todo Need to be reworked
 		DiskMovementComponent->StopMovementImmediately();
 		DiskMovementComponent->Deactivate();
 		DiskMovementComponent->SetUpdatedComponent(DiskMeshComponent); // ← importante
@@ -126,17 +127,18 @@ void ADisk::Throw()
 		DiskMovementComponent->bShouldBounce = true;
 		DiskMovementComponent->Bounciness = 1.f;
 		DiskMovementComponent->Friction = 0.f;
-		
+		// this is fine i guess
 		FVector LaunchDirection = ViewpointRotation.Vector();
 		DiskMovementComponent->Velocity = LaunchDirection * DiskSpeed;
 		SetActorRotation(LaunchDirection.Rotation());
 		SetActorEnableCollision(true);
 		
+		//this need to be removed
 		CurrentState = EDiskState::Throw;
 	}
 }
 
-//need rework
+// @todo total rework
 void ADisk::DiskSweepTraceForTaget(FVector ViewpointLocation, FRotator ViewpointRotation)
 {
 	FHitResult OutHit;
