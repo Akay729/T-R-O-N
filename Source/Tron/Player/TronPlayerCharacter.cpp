@@ -17,6 +17,7 @@ ATronPlayerCharacter::ATronPlayerCharacter()
 	
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
+	CameraComponent->bUsePawnControlRotation = true;
 }
 
 void ATronPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
