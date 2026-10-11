@@ -14,4 +14,5 @@ class TRON_API ATronPlayerController : public APlayerController
 public:
 
 	ATronPlayerController();
+	
 };
