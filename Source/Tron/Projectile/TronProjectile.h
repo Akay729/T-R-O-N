@@ -34,8 +34,8 @@ protected:
 	void PlayHitEffectsAtLocation();
 public:
 	virtual void PostInitializeComponents() override;
-	virtual void OnActorHit(UPrimitiveComponent*, HitComponent, AActor*, OtherActor, UPrimitiveComponent*, OtherComp,
-		FVector, NormalImpulse, const FHitResult&, Hit ) const;
+	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		FVector NormalImpulse, const FHitResult& Hit );
 };
 
 

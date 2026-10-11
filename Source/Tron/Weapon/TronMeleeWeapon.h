@@ -15,3 +15,11 @@ public:
 	// Sets default values for this actor's properties
 	ATronMeleeWeapon();
 }
+
+//@todo: 
+//- Create socket basic collison rule and box for the melee weapon
+//- Create a function for OnHitActior
+//- Create fucktion for sfx and vfx when get hit.
+//- add animation montage varriabile
+//
+
