@@ -14,7 +14,7 @@ class TRON_API ATronMeleeWeapon : public AActor
 public:
 	// Sets default values for this actor's properties
 	ATronMeleeWeapon();
-}
+};
 
 //@todo: 
 //- Create socket basic collison rule and box for the melee weapon
