@@ -19,12 +19,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	int32 MaxBounce {3};
 	
+	FTimerHandle RecallTimerHandle;
 	//TArray<AActor> ActorsHit;
 	
 public:
 	ATronDiskProjectile();
 
-	void RecallDisk();
+	void StartRecallDisk();
+	void MoveTowardsOwner();
+	
+	UFUNCTION()
 	void BounceBehavior(const FHitResult& ImpactResult, const FVector& ImpactVelocity );
 	void DetectTargetActor();
 	
@@ -35,5 +39,5 @@ public:
 
 
 //@todo: 
-//-Fucntion to recall the disk 
+//-Function to recall the disk 
 //-Function to handle bounce behavior - 

@@ -34,7 +34,6 @@ void ATronProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* Othe
 {
 	//Basic 
 	PlayHitEffectsAtLocation();
-	Destroy();
 }
 
 
